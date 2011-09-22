@@ -32,7 +32,7 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*)
 
 all: $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 
-test: $(addprefix test-,$(TESTBENCHES))
+test: clean $(addprefix test-,$(TESTBENCHES))
 
 clean:
 	$(GHDL) --clean --workdir=$(BUILD_DIR)
