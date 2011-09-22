@@ -29,10 +29,13 @@ GHDL_SIM_FLAGS_d_flipflop_tb = --stop-time=500ns
 ###############
 SRC_FILES = $(wildcard $(SRC_DIR)/*)
 
-all: $(addprefix build/,$(TESTBENCHES))
+all: $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
+
+test: $(addprefix test-,$(TESTBENCHES))
 
 clean:
 	$(GHDL) --clean --workdir=$(BUILD_DIR)
+	-rm $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 
 $(BUILD_DIR) $(WAVEFORM_DIR):
 	@mkdir -p $@
@@ -42,6 +45,10 @@ $(BUILD_DIR)/%: tests/%.vhd $(BUILD_DIR)
 	$(GHDL) -m $(GHDL_FLAGS) --workdir=$(BUILD_DIR) --work=$(WORK_LIB) $*
 	@mv $* $@
 
+test-%: $(BUILD_DIR)/%
+	@echo
+	$< $(GHDL_SIM_FLAGS) $(GHDL_SIM_FLAGS_$*)
+
 $(WAVEFORM_DIR)/%.vcdgz: $(BUILD_DIR)/% $(WAVEFORM_DIR)
 	$< $(GHDL_SIM_FLAGS) $(GHDL_SIM_FLAGS_$*) --vcdgz=$(WAVEFORM_DIR)/$*.vcdgz
 
@@ -49,4 +56,4 @@ view-%: $(WAVEFORM_DIR)/%.vcdgz
 	gunzip --stdout $< | $(WAVEFORM_VIEWER) --vcd
 
 .PRECIOUS: $(WAVEFORM_DIR)/%.vcdgz $(BUILD_DIR)/%
-.PHONY: view-% all clean
+.PHONY: view-% test-% all test clean
