@@ -1,0 +1,212 @@
+#!/usr/bin/env ruby
+# -*- encoding: utf-8 -*-
+
+# Author:
+#      Wim Looman
+# Copyright:
+#      Copyright (c) 2010 Wim Looman
+
+def twos_complement(num,bits=8)
+  return num < 0 ? 2**bits + num : num
+end
+
+class Operand
+  def initialize op
+    if op == nil
+      @type = nil
+    else
+      @type, @id, @mod = *op.chars
+    end
+  end
+
+  def match op
+    return {} if @type == nil
+    return nil if op == nil
+
+    type, num, mod = *op.chars
+    case @type
+    when 'a', 'r'
+      return nil if type != @type or mod != @mod
+      { @id => Integer(num) }
+    when 'v'
+      begin
+        { 'v' => twos_complement(Integer(op)) }
+      rescue ArgumentError
+        nil
+      end
+    end
+  end
+end
+
+class Opcode
+  def initialize opcode
+    @chunks = opcode.map do |chunk|
+      if chunk[0] <= ?9 && chunk[0] >= ?0
+        { :val => chunk.to_i(2), :len => chunk.length }
+      else
+        { :id => chunk.chars.to_a[0], :len => chunk.chars.to_a[1].to_i }
+      end
+    end
+  end
+
+  def match values
+    val = 0
+    pos = 16
+    @chunks.each do |chunk|
+      if chunk.include? :val
+        pos -= chunk[:len]
+        val += chunk[:val] << pos
+      else
+        pos -= chunk[:len]
+        val += (values[chunk[:id]] & (2**chunk[:len] - 1)) << pos
+      end
+    end
+    val
+  end
+end
+
+class Instruction
+  def initialize syntax, opcode
+    @name, op1, op2 = *syntax
+    @op1 = Operand.new(op1)
+    @op2 = Operand.new(op2)
+    @opcode = opcode
+  end
+
+  def match inst
+    name, op1, op2 = *inst.split
+    return nil unless @name == name
+    a = @op1.match(op1)
+    b = @op2.match(op2)
+    return nil unless a != nil and b != nil
+    c = @opcode.match(a.merge(b))
+    return c
+  end
+
+  class << self
+    def parse_lines lines
+      lines.map { |line| self.parse_line(line) }.compact
+    end
+
+    def parse_line line
+      chunks = line.split
+      return nil unless chunks.length > 3 and chunks.include? ':'
+      syntax = []
+      syntax << chunks.delete_at(0) while chunks.first != ':'
+      chunks.delete_at(0)
+      Instruction.new(syntax, Opcode.new(chunks))
+    end
+  end
+end
+
+
+if !(1..2).include?(ARGV.length) || !File.exist?(ARGV[0])
+  puts "Usage: ruby #{$0} <input_file> [<output_file>]"
+  exit 1
+end
+
+instructions = Instruction.parse_lines(DATA)
+
+input = IO.readlines(ARGV[0])
+
+begin
+  instruction = 0
+  symbols = {}
+  input.each do |line|
+    chunks = line.sub(",", " ").split
+    case chunks[0]
+      when '#', nil
+        # Ignore comments and empty lines
+
+      when "label:"
+        symbols[chunks[1]] = instruction
+
+      else
+        instruction += 1
+    end
+  end
+
+  line_no = 0
+  instruction = 0
+  output = []
+  input.map{|a|a.strip.squeeze(' ')}.each do |line|
+    line_no += 1
+    label = line.sub(",", " ").split[0]
+    case label
+      when '#', nil, 'label:'
+        # Ignore comments, blank lines and label declarations
+
+      else
+        instruction += 1
+        line.split.each do |chunk|
+          if symbols.include? chunk
+            move_to = symbols[chunk]
+            diff = move_to - instruction
+            if diff < 1
+              diff = twos_complement(diff)
+            end
+            line[chunk] = diff.to_s
+          end
+        end
+        # need to substitute labels
+        inst = instructions.find { |inst| inst.match(line) }
+        if inst
+          output << inst.match(line)
+        else
+          raise "Unknown instruction [#{line}] near line [#{line_no}]"
+        end
+        #output.push(convert_line(line, symbols, line_no))
+    end
+  end
+
+rescue RuntimeError => e
+  puts "There was an error parsing your file:\n\t#{e.message}"
+  exit 1
+end
+
+case ARGV.length
+when 2
+  File.open(ARGV[1], "wb") do |file|
+    output.each { |char| file.putc(char) }
+  end
+else
+  output.each { |char| $stdout.putc(char) }
+end
+__END__
+  LDI   rx    m     : 100001      m8      x2
+  LD    rx    ay    : 000001  000 y2  00  x3
+  LD    rx    ay+   : 001001  000 y2  00  x3
+  LD    rx    ay-   : 010001  000 y2  00  x3
+  STI   ay    m     : 100101      m8      y2
+  ST    ay    rx    : 000101  000 y2  00  x3
+  ST    ay+   rx    : 001101  000 y2  00  x3
+  ST    ay-   rx    : 010101  000 y2  00  x3
+  MV    ry    rx    : 000100  00  y3  00  x3
+  MV    ayH   rx    : 000100  110 y2  00  x3
+  MV    ayL   rx    : 000100  100 y2  00  x3
+  MV    rx    ayH   : 000100  00  x3  110 y2
+  MV    rx    ayL   : 000100  00  x3  100 y2
+  AND   ry    rx    : 000010  00  y3  00  x3
+  OR    ry    rx    : 000110  00  y3  00  x3
+  NOT   ry    rx    : 001010  00  y3  00  x3
+  XOR   ry    rx    : 001110  00  y3  00  x3
+  ADD   ry    rx    : 010010  00  y3  00  x3
+  ADC   ry    rx    : 010110  00  y3  00  x3
+  SUB   ry    rx    : 011010  00  y3  00  x3
+  SBB   ry    rx    : 011110  00  y3  00  x3
+  NEG   ry    rx    : 001000  00  y3  00  x3
+  CMP   ry    rx    : 001100  00  y3  00  x3
+  BEQ   m           : 100011      m8  00
+  BNE   m           : 100111      m8  00
+  BLT   m           : 101011      m8  00
+  BGT   m           : 101111      m8  00
+  BC    m           : 110011      m8  00
+  BNC   m           : 110111      m8  00
+  RJMP  m           : 111011      m8  00
+  JMP   ay          : 011111  000 y2  000 00
+
+  HALT              : 000000  000 00  000 00
+  ADDU  ry    rx    : 010010  00  y3  01  x3
+  SUBU  ry    rx    : 011010  00  y3  01  x3
+  SBBU  ry    rx    : 011110  00  y3  01  x3
+  RSH   ry    rx    : 010111  00  y3  00  x3
