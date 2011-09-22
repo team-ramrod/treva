@@ -7,6 +7,7 @@ GHDL_SIM_FLAGS +=
 
 WAVEFORM_VIEWER = gtkwave
 
+-include local.mk
 
 #################
 #  Directories  #
