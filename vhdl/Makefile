@@ -32,7 +32,8 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*)
 
 all: $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 
-test: clean $(addprefix test-,$(TESTBENCHES))
+test:
+	@make -ks clean $(addprefix test-,$(TESTBENCHES)) clean
 
 clean:
 	$(GHDL) --clean --workdir=$(BUILD_DIR)
@@ -48,7 +49,7 @@ $(BUILD_DIR)/%: tests/%.vhd $(BUILD_DIR)
 
 test-%: $(BUILD_DIR)/%
 	@echo
-	$< $(GHDL_SIM_FLAGS) $(GHDL_SIM_FLAGS_$*)
+	$< $(GHDL_SIM_FLAGS) $(GHDL_SIM_FLAGS_$*) 2>&1
 
 $(WAVEFORM_DIR)/%.vcdgz: $(BUILD_DIR)/% $(WAVEFORM_DIR)
 	$< $(GHDL_SIM_FLAGS) $(GHDL_SIM_FLAGS_$*) --vcdgz=$(WAVEFORM_DIR)/$*.vcdgz
