@@ -37,7 +37,7 @@ test:
 
 clean:
 	$(GHDL) --clean --workdir=$(BUILD_DIR)
-	-rm $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
+	-rm -f $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 
 $(BUILD_DIR) $(WAVEFORM_DIR):
 	@mkdir -p $@
