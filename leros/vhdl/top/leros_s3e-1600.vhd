@@ -31,6 +31,7 @@ architecture rtl of leros_nexys2 is
 	signal ioin : io_in_type;
 	
 	signal outp 			: std_logic_vector(15 downto 0);
+	signal inp 			: std_logic_vector(15 downto 0);
 	
 begin
 
@@ -72,8 +73,23 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
+process(clk_int)
+begin
+	if rising_edge(clk_int) then
 -- Input definitions
-	ioin.rddata <= pbtn & sbtn & (others => '0');
+		case ioout.addr is
+			when "00000001" =>
+				inp <= pbtn;
+			when "00000010" =>
+				inp <= sbtn;
+			when others =>
+				null;
+		end case;
+		if ioout.rd='1' then
+			ioin.rddata <= inp;
+		end if;
+	end if;
+end process;
 	
 process(clk_int)
 begin
