@@ -13,7 +13,6 @@ USB=true
 
 # Assembler files
 APP=test
-APP=muvium
 
 # Java application
 JAPP=Blink
