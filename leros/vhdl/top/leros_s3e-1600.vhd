@@ -72,6 +72,7 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
+-- Input definitions
 	ioin.rddata <= pbtn & sbtn & (others => '0');
 	
 process(clk_int)
@@ -80,6 +81,7 @@ begin
 		if ioout.wr='1' then
 			outp <= ioout.wrdata;
 		end if;
+-- Output definitions
 		case ioout.addr is
 			when "00000001" =>
 				led <= outp(7 downto 0);
