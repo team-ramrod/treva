@@ -15,5 +15,12 @@ end d_flipflop;
 
 architecture arch_d_flipflop of d_flipflop is
 begin
-  Q <= D;
+	process(clk,rst)
+	begin
+		if rst = '0' then
+			Q <= '0';
+		elsif rising_edge(clk) then
+			Q <= D;
+		end if;
+	end process;
 end arch_d_flipflop;
