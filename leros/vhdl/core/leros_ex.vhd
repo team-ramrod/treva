@@ -67,7 +67,7 @@ architecture rtl of leros_ex is
 
 	-- the accu
 	signal accu, opd  : unsigned(15 downto 0);
-	signal log, arith, a_mux : unsigned (15 downto 0);
+	signal logic, arith, shift, a_mux : unsigned (15 downto 0);
 	
 	-- the data ram
 	constant nwords : integer := 2 ** DM_BITS;
@@ -104,40 +104,44 @@ begin
 end process;
 
 -- that's the ALU	
-process(din, accu, opd, log, arith, ioin)
+process(din, accu, opd, logic, arith, shift, ioin)
 begin
-	if din.dec.add_sub='0' then
-		arith <= accu + opd;
-	else
-		arith <= accu - opd;
-	end if;
+    
+        -- IMPORTANT
+        -- ld, add, lsh = 00
+        -- and, sub,rsh = 01
+        -- or, mult, lro = 10
+        -- xor, div, rro = 11
 
-	case din.dec.op is
-		when op_ld =>
-			log <= opd;
-		when op_and =>
-			log <= accu and opd;
-		when op_or =>
-			log <= accu or opd;
-		when op_xor =>
-			log <= accu xor opd;
-		when others =>
-			null;
-	end case;
-	
-	if din.dec.log_add='0' then
-		if din.dec.shr='1' then
-			a_mux <= '0' & accu(15 downto 1);
-		else
-			if din.dec.inp='1' then
-				a_mux <= unsigned(ioin.rddata);
-			else
-				a_mux <= log;
-			end if;
-		end if;
-	else
-		a_mux <= arith;
-	end if;
+        case din.dec.op is
+            when '00' =>
+                logic <= opd; -- load
+                arith <= accu + opd
+                shift <= accu(14 downto 0) & 0; -- left shift
+            when '01' =>
+                logic <= accu and opd;
+                arith <= accu - opd;
+                shift <= '0' & accu(15 downto 1); -- right shift
+            when '10' =>
+                logic <= accu or opd;
+                arith <= accu * opd;
+                shift <= accu(14 downto 0) & accu(15); -- left rotate
+            when '11' =>
+                logic <= accu xor opd;
+                arith <= accu * opd; -- WARNING! DIV instruction multiplies..
+                shift <= accu(0) & accu(15 downto 1); -- right rotate
+
+        case din.dec.op_class is
+            when logic =>
+                a_mux <= logic;
+            when arith =>
+                a_mux <= arith;
+            when shift =>
+                a_mux <= shift
+            when io => 
+                a_mux <= unsigned(ioin.rddata);
+            when others
+                a_mux <= (others => '0')
 		
 end process;
 
