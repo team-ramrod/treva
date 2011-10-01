@@ -35,6 +35,28 @@ all: $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 test:
 	@make -ks clean $(addprefix test-,$(TESTBENCHES)) clean
 
+list:
+	@echo $(addsuffix $(shell printf '\n'),$(TESTBENCHES))
+
+help:
+	@echo "Wim's Über GHDL Makefile"
+	@echo "------------------------"
+	@echo "Commands:"
+	@echo "  all (default):"
+	@echo "    Build all known testbenches"
+	@echo "  test:"
+	@echo "    Fully recompile and run all testbenches"
+	@echo "  list:"
+	@echo "    List all known testbenches"
+	@echo "  help:"
+	@echo "    Display this help message"
+	@echo "  clean:"
+	@echo "    Clean all the compiled files"
+	@echo "  test-%:"
+	@echo "    Run the textbench %"
+	@echo "  view-%:"
+	@echo "    Generate the waveform for testbench % and open it in gtkwave"
+
 clean:
 	$(GHDL) --clean --workdir=$(BUILD_DIR)
 	-rm -f $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
