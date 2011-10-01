@@ -63,6 +63,18 @@ begin
 
     assert Q = '1' report "Cleared without clock edge" severity error;
 
+    D <= '1'; wait for 1 ns;
+
+    clk <= '1'; wait for 1 ns;
+
+    D <= '0'; wait for 1 ns;
+
+    assert Q = '1' report "Cleared without clock edge" severity error;
+
+    clk <= '0'; wait for 1 ns;
+
+    assert Q = '1' report "Cleared on negative clock edge" severity error;
+
     -- Check that can be cleared;
     clk <= '1'; wait for 1 ns;
     clk <= '0'; wait for 1 ns;
