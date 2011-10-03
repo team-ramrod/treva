@@ -31,7 +31,7 @@ ll2:
 
     load    r1
     add     1
-    out     0
+    out     1
     store   r1
 
     nop
