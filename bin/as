@@ -109,10 +109,6 @@ instructions = Instruction.parse_lines(DATA)
 
 input = IO.readlines(ARGV[0])
 
-input <<<<-END
-blahdyblahblahblahcontbebotherewithanewlabel: branch blahdyblahblahblahcontbebotherewithanewlabel
-END
-
 begin
   instruction = 1
   symbols = {}
