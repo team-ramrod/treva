@@ -74,9 +74,7 @@ begin
 process(decode, din, imout)
 	variable addr : std_logic_vector(15 downto 0);
 begin
-	for i in 0 to (stream-1) loop
-		addr := std_logic_vector(unsigned(din.dm_data(i)) + unsigned(imout.data(7 downto 0)));
-	end loop;
+	addr := std_logic_vector(unsigned(din.dm_data(0)) + unsigned(imout.data(7 downto 0)));
 	
 	-- MUX for indirect load/store (from unregistered decode)
 	if decode.indls='1' then
