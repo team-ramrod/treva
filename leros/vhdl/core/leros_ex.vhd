@@ -168,9 +168,9 @@ begin
 		wraddr_dly <= din.dm_addr;
 		pc_dly <= din.pc;
 		-- a simple output port for the hello world example
---		if din.dec.outp='1' then
---			dout.outp <= std_logic_vector(accu);
---		end if;
+---             if din.dec.outp='1' then
+---                     dout.outp <= std_logic_vector(accu);
+---             end if;
 	end if;
 end process;
 
