@@ -12,7 +12,7 @@ USB=true
 
 
 # Assembler files
-APP=blink
+APP=count
 
 # Java application
 JAPP=Blink
