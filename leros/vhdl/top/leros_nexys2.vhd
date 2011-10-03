@@ -73,7 +73,7 @@ architecture rtl of leros_nexys2 is
 	signal ioout : io_out_type;
 	signal ioin : io_in_type;
 	
-	signal outp 			: std_logic_vector(15 downto 0);
+	signal outp 			: stream_std;
 	
 begin
 
@@ -125,7 +125,7 @@ begin
 		if ioout.wr='1' then
 			outp <= ioout.wrdata;
 		end if;
-		led <= outp(7 downto 0);
+		led <= outp(0)(7 downto 0);
 	end if;
 end process;
 

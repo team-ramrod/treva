@@ -100,7 +100,7 @@ package leros_types is
 		addr : std_logic_vector(7 downto 0);
 		rd : std_logic;
 		wr : std_logic;
-		wrdata : std_logic_vector(15 downto 0);
+		wrdata : stream_std;
 	end record;
 
 	type io_in_type is record

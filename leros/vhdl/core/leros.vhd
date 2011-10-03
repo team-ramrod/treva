@@ -65,7 +65,7 @@ begin
 	ioout.addr <= fdout.imm(7 downto 0);
 	ioout.rd <= fdout.dec.inp;
 	ioout.wr <= fdout.dec.outp;
-	ioout.wrdata <= exout.accu(0);
+	ioout.wrdata <= exout.accu;
 	
 	
 	fd: entity work.leros_fedec port map (
