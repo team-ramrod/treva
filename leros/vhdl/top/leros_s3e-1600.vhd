@@ -4,12 +4,12 @@ use ieee.numeric_std.all;
 
 use work.leros_types.all;
 
-entity leros_s3e_1600 is
+entity leros_nexys2 is
 port (
 	clk     : in std_logic;
 	led     : out std_logic_vector(7 downto 0);
 	pbtn	: in std_logic_vector(3 downto 0);
-	sbtn	: in std_logic_vector(3 downto 0);
+	sbtn	: in std_logic_vector(3 downto 0)
 );
 end leros_nexys2;
 
@@ -79,9 +79,9 @@ begin
 -- Input definitions
 		case ioout.addr is
 			when "00000001" =>
-				inp <= pbtn;
+				inp <= "000000000000" & pbtn;
 			when "00000010" =>
-				inp <= sbtn;
+				inp <= "000000000000" & sbtn;
 			when others =>
 				null;
 		end case;
