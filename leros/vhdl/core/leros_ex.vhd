@@ -105,6 +105,7 @@ end process;
 
 -- that's the ALU	
 process(din, accu, opd, logic, arith, shift, ioin)
+variable tmp : unsigned (31 downto 0);
 begin
     
         -- IMPORTANT
@@ -114,35 +115,39 @@ begin
         -- xor, div, rro = 11
 
         case din.dec.op is
-            when '00' =>
+            when "00" =>
                 logic <= opd; -- load
-                arith <= accu + opd
-                shift <= accu(14 downto 0) & 0; -- left shift
-            when '01' =>
+                arith <= accu + opd;
+                shift <= accu(14 downto 0) & '0'; -- left shift
+            when "01" =>
                 logic <= accu and opd;
                 arith <= accu - opd;
                 shift <= '0' & accu(15 downto 1); -- right shift
-            when '10' =>
+            when "10" =>
                 logic <= accu or opd;
-                arith <= accu * opd;
+					 tmp := accu * opd;
+                arith <= tmp(15 downto 0);
                 shift <= accu(14 downto 0) & accu(15); -- left rotate
-            when '11' =>
+            when "11" =>
                 logic <= accu xor opd;
-                arith <= accu * opd; -- WARNING! DIV instruction multiplies..
+					 tmp := accu * opd;
+                arith <= tmp(15 downto 0); -- WARNING! DIV instruction multiplies..
                 shift <= accu(0) & accu(15 downto 1); -- right rotate
-
+				when others =>
+					null;
+			end case;
         case din.dec.op_class is
-            when logic =>
+            when logic_flag =>
                 a_mux <= logic;
-            when arith =>
+            when arith_flag =>
                 a_mux <= arith;
-            when shift =>
-                a_mux <= shift
-            when io => 
+            when shift_flag =>
+                a_mux <= shift;
+            when io_flag=> 
                 a_mux <= unsigned(ioin.rddata);
-            when others
-                a_mux <= (others => '0')
-		
+            when others =>
+                a_mux <= (others => '0');
+		end case;
 end process;
 
 -- a MUX between 'normal' data and the PC for jal

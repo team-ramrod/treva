@@ -51,12 +51,12 @@ begin
 process(instr)
 begin
 	-- some defaults
-	dec.op <= '00';
+	dec.op <= "00";
 	dec.al_ena <= '0';
 	dec.ah_ena <= '0';
-	dec.log_add <= '0';
-	dec.add_sub <= '0';
-	dec.shr <= '0';
+	--dec.log_add <= '0';
+	--dec.add_sub <= '0';
+	--dec.shr <= '0';
 	dec.sel_imm <= '0';
 	dec.store <= '0';
 	dec.outp <= '0';
@@ -77,18 +77,18 @@ begin
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 			--dec.log_add <= '1';
-                        dec.op_type <= arith;
+                        dec.op_class <= arith_flag;
 		when "00010" =>		-- shr
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 			--dec.shr <= '1';
-                        dec.op_type <= shift;
+                        dec.op_class <= shift_flag;
 		when "00011" =>		-- reserved
 			null;
 		when "00100" =>		-- alu
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
-                        dec.op_type <= logic;
+                        dec.op_class <= logic_flag;
 		when "00101" =>		-- loadh
 			dec.loadh <= '1';
 			dec.ah_ena <= '1';
@@ -102,7 +102,7 @@ begin
 				dec.ah_ena <= '1';
 				dec.inp <= '1';
 			end if;
-                        dec.op_type <= io;
+                        dec.op_class <= io_flag;
 		when "01000" =>		-- jal
 			dec.jal <= '1';
 			dec.store <= '1';
