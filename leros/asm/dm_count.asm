@@ -11,6 +11,7 @@ start:
 
 loop:
     load      128
+    loadh     0
     store     r0
 
 ll1:
