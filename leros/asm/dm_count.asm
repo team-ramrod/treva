@@ -1,3 +1,4 @@
+// first instruction is not executed
     nop
 
 start:
@@ -9,7 +10,7 @@ start:
     store     (ar+8)
 
 loop:
-    load      2
+    load      128
     store     r0
 
 ll1:
