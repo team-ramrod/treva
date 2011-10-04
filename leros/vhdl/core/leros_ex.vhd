@@ -93,13 +93,15 @@ begin
 	wraddr <= wraddr_dly;
 	
 	
-process(din, rddata)
+--process(din, rddata)
+process(din, ioin.rddata)
 begin
 	if din.dec.sel_imm='1' then
 		opd <= unsigned(din.imm);
 	else
 		-- a MUX for IO will be added
-		opd <= unsigned(rddata);
+		--opd <= unsigned(rddata);
+                opd <= unsigned(ioin.rddata);
 	end if;
 end process;
 
@@ -125,17 +127,18 @@ begin
                 shift <= '0' & accu(15 downto 1); -- right shift
             when "10" =>
                 logic <= accu or opd;
-					 tmp := accu * opd;
+                tmp := accu * opd;
                 arith <= tmp(15 downto 0);
                 shift <= accu(14 downto 0) & accu(15); -- left rotate
             when "11" =>
                 logic <= accu xor opd;
-					 tmp := accu * opd;
+                tmp := accu * opd;
                 arith <= tmp(15 downto 0); -- WARNING! DIV instruction multiplies..
                 shift <= accu(0) & accu(15 downto 1); -- right rotate
-				when others =>
-					null;
-			end case;
+            when others =>
+                null;
+        end case;
+
         case din.dec.op_class is
             when logic_flag =>
                 a_mux <= logic;
