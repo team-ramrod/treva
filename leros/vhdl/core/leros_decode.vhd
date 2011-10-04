@@ -61,7 +61,6 @@ begin
 	dec.store <= '0';
 	dec.outp <= '0';
 	dec.inp <= '0';
-	dec.addr_op <= '0';
 	-- used in decode, not in ex
 	dec.br_op <= '0';
 	dec.jal <= '0';
@@ -106,7 +105,7 @@ begin
 		when "01001" =>		-- branch
 			dec.br_op <= '1';
 		when "01010" =>		-- loadaddr
-			dec.addr_op <= '1';
+			null;
 		when "01100" =>		-- load indirect
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';

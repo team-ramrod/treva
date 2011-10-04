@@ -9,7 +9,7 @@ start:
     store     (ar+8)
 
 loop:
-    load      255
+    load      2
     store     r0
 
 ll1:
