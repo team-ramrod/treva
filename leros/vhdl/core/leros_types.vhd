@@ -35,8 +35,8 @@ use ieee.numeric_std.all;
 
 package leros_types is
 
-	-- should this later go to a lerso_config package?
-	constant DM_BITS : integer := 8;
+	-- should this later go to a leros_config package?
+	constant DM_BITS : integer := 15;
 	constant IM_BITS : integer := 9;
 	constant stream : integer := 3;
 

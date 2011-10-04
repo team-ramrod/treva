@@ -7,8 +7,8 @@ start:
     store   r1
 
 loop:
-    load    0
-    loadh   2
+    load    128
+    loadh     0
     store   r0
 
 ll1:
@@ -25,14 +25,14 @@ ll2:
     sub     1
     store   r0
 
-    nop
     brnz    ll1
     nop
 
     load    r1
     add     1
-    out     1
+    out     0
     store   r1
 
+    load 1
     nop
-    branch  loop
+    brnz    loop

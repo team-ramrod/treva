@@ -3,37 +3,36 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.leros_types.all;
+use work.io_types.all;
 
 entity leros_s3e_1600 is
 port (
 	clk     : in std_logic;
-	led     : out std_logic_vector(7 downto 0);
-	pbtn	: in std_logic_vector(3 downto 0);
-	sbtn	: in std_logic_vector(3 downto 0);
+	leds    : out std_logic_vector(7 downto 0);
+	pbtn    : in std_logic_vector(3 downto 0);
+	sbtn    : in std_logic_vector(3 downto 0)
 );
-end leros_nexys2;
+end leros_s3e_1600;
 
-architecture rtl of leros_nexys2 is
-
-
---
---	Signals
---
+architecture rtl of leros_s3e_1600 is
 	signal clk_int			: std_logic;
 
 	signal int_res			: std_logic;
 	signal res_cnt			: unsigned(2 downto 0) := "000";	-- for the simulation
 
-	attribute altera_attribute : string;
-	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
-
 	signal ioout : io_out_type;
 	signal ioin : io_in_type;
 	
-	signal outp 			: std_logic_vector(15 downto 0);
-	signal inp 			: std_logic_vector(15 downto 0);
-	
+	signal pins_in  : io_pins_in_type;
+	signal pins_out : io_pins_out_type;
+
+	attribute altera_attribute : string;
+	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
 begin
+	pins_in.sbtn <= sbtn;
+	pins_in.pbtn <= pbtn;
+
+	leds <= pins_out.leds;
 
 	-- input clock is 50 MHz
 	-- let's go for 200 MHz ;-)
@@ -52,60 +51,20 @@ begin
 		LOCKED_OUT => open
 	);
 
---	clk_int <= clk;
---
 --	internal reset generation
 --	should include the PLL lock signal
---
+	process(clk_int)
+	begin
+		if rising_edge(clk_int) then
+			if (res_cnt/="111") then
+				res_cnt <= res_cnt+1;
+			end if;
 
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
-		if (res_cnt/="111") then
-			res_cnt <= res_cnt+1;
+			int_res <= not res_cnt(0) or not res_cnt(1) or not res_cnt(2);
 		end if;
-
-		int_res <= not res_cnt(0) or not res_cnt(1) or not res_cnt(2);
-	end if;
-end process;
+	end process;
 
 
-	cpu: entity work.leros
-		port map(clk_int, int_res, ioout, ioin);
-
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
--- Input definitions
-		case ioout.addr is
-			when "00000001" =>
-				inp <= pbtn;
-			when "00000010" =>
-				inp <= sbtn;
-			when others =>
-				null;
-		end case;
-		if ioout.rd='1' then
-			ioin.rddata <= inp;
-		end if;
-	end if;
-end process;
-	
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
-		if ioout.wr='1' then
-			outp <= ioout.wrdata;
-		end if;
--- Output definitions
-		case ioout.addr is
-			when "00000001" =>
-				led <= outp(7 downto 0);
-			when others =>
-				null;
-		end case;
-	end if;
-end process;
-
-
+	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
+	io  : entity work.io_cu port map(clk_int, pins_in, pins_out, ioout, ioin);
 end rtl;

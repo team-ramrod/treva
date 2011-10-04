@@ -81,7 +81,8 @@ begin
 		dout.dm_addr <= addr(DM_BITS-1 downto 0);
 	else
 		-- If DM > 256 zero extend the varidx
-		dout.dm_addr <= imout.data(DM_BITS-1 downto 0);
+		dout.dm_addr <= (others => '0');
+		dout.dm_addr(7 downto 0) <= imout.data;
 	end if;
 
 end process;
