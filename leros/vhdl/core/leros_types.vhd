@@ -52,7 +52,6 @@ package leros_types is
 		store : std_logic;
 		outp : std_logic;
 		inp : std_logic;
-		addr_op : std_logic;
 		-- the following are used *in* the decode stage, not in the ex stage
 		indls : std_logic;
 		br_op : std_logic;
@@ -74,7 +73,6 @@ package leros_types is
 	type fedec_in_type is record
 		accu : std_logic_vector(15 downto 0);
 		dm_data : std_logic_vector(15 downto 0);
-		ar : std_logic_vector(15 downto 0);
 	end record;
 
 	type fedec_out_type is record
@@ -92,7 +90,6 @@ package leros_types is
 	type ex_out_type is record
 		accu : std_logic_vector(15 downto 0);
 		dm_data : std_logic_vector(15 downto 0);
-		ar : std_logic_vector(15 downto 0);
 	end record;
 	
 	type io_out_type is record
