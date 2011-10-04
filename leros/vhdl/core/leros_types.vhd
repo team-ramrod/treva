@@ -38,7 +38,7 @@ package leros_types is
 	-- should this later go to a lerso_config package?
 	constant DM_BITS : integer := 8;
 	constant IM_BITS : integer := 9;
-	constant stream : integer := 10;
+	constant stream : integer := 3;
 
 	type stream_std is array(0 to stream-1) of std_logic_vector(15 downto 0);
 	type stream_unsigned is array(0 to stream-1) of unsigned(15 downto 0);
@@ -104,7 +104,7 @@ package leros_types is
 	end record;
 
 	type io_in_type is record
-		rddata : std_logic_vector(15 downto 0);
+		rddata : stream_std;
 	end record;
 	
 

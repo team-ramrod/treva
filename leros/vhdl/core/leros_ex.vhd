@@ -77,8 +77,6 @@ architecture rtl of leros_ex is
 	-- 0 initialization is for simulation only
 	-- Xilinx and Altera FPGA initialize memory blocks to 0
 	signal dm : ram_array_type; --:= (others => (others =>'0'));
-	--signal dm2 : ram_type := (others => (others =>'0'));
-	--signal dm3 : ram_type := (others => (others =>'0'));
 	
 	signal wrdata, rddata : stream_std;
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
@@ -143,7 +141,7 @@ begin
 				a_mux(i) <= '0' & accu(i)(15 downto 1);
 			else
 				if din.dec.inp='1' then
-					a_mux(i) <= unsigned(ioin.rddata);
+					a_mux(i) <= unsigned(ioin.rddata(i));
 				else
 					a_mux(i) <= log(i);
 				end if;
@@ -170,16 +168,21 @@ end process;
 
 process(clk, reset)
 begin
-	for i in 0 to (stream-1) loop
 		if reset='1' then
+		for i in 0 to (stream-1) loop
 			accu(i) <= (others => '0');
+		end loop;
 	--		dout.outp <= (others => '0');
 		elsif rising_edge(clk) then
 			if din.dec.al_ena = '1' then
-				accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
+				for i in 0 to (stream-1) loop
+					accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
+				end loop;
 			end if;
 			if din.dec.ah_ena = '1' then
-				accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
+				for i in 0 to (stream-1) loop
+					accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
+				end loop;
 			end if;
 			wraddr_dly <= din.dm_addr;
 			pc_dly <= din.pc;
@@ -188,7 +191,6 @@ begin
 	--			dout.outp <= std_logic_vector(accu);
 	--		end if;
 		end if;
-	end loop;
 end process;
 
 -- the data memory (DM)
@@ -199,17 +201,15 @@ begin
 	if rising_edge(clk) then
 		-- is store overloaded?
 		-- now we have only 'register' read and write
+		
 		if din.dec.store='1' then
 			for i in 0 to (stream-1) loop
-				dm(i)(to_integer(unsigned(wraddr))) <= wrdata(0);
+				dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
 			end loop;
 		end if;
-		
 		for i in 0 to (stream-1) loop
 			rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
 		end loop;
 	end if;
 end process;
-
-	
 end rtl;

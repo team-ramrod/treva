@@ -115,7 +115,7 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
-	ioin.rddata <= (others => '0');
+	ioin.rddata <= (others => (others => '0'));
 	
 	rstx <= '0'; -- just a default to make ISE happy
 	
