@@ -115,7 +115,7 @@ begin
   input.each do |line|
     chunks = line.sub(",", " ").split
     case chunks[0]
-      when '#', /^\/\//, nil
+      when /^#/, /^\/\//, nil
         # Ignore comments and empty lines
 
       when /^(\w+):/
@@ -139,19 +139,23 @@ begin
         line.sub!($1,"")
         line_no -= 1
         redo
-      when '#', nil, /^\/\//
+      when /^#/, nil, /^\/\//
         # Ignore comments and blank lines
 
       else
         instruction += 1
         line.split.each do |chunk|
-          if symbols.include? chunk
-            move_to = symbols[chunk]
-            diff = move_to - instruction
-            if diff < 1
-              diff = twos_complement(diff)
+          if symbols.include? chunk.sub(/^</,'').sub(/^>/,'')
+            move_to = symbols[chunk.sub(/^</,'').sub(/^>/,'')]
+            case chunk
+            when /^</
+              val = move_to - 1
+            when /^>/
+              val = move_to >> 8
+            else
+              val = move_to - instruction
             end
-            line[chunk] = diff.to_s
+            line[chunk] = val.to_s
           end
         end
         inst = instructions.find { |inst| inst.match(line) }
