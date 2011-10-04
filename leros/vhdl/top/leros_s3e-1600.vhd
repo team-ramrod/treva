@@ -10,7 +10,7 @@ port (
 	clk     : in std_logic;
 	leds    : out std_logic_vector(7 downto 0);
 	pbtn    : in std_logic_vector(3 downto 0);
-	sbtn    : in std_logic_vector(3 downto 0);
+	sbtn    : in std_logic_vector(3 downto 0)
 );
 end leros_s3e_1600;
 
@@ -20,8 +20,11 @@ architecture rtl of leros_s3e_1600 is
 	signal int_res			: std_logic;
 	signal res_cnt			: unsigned(2 downto 0) := "000";	-- for the simulation
 
-	signal pins_in  : io_pins_in;
-	signal pins_out : io_pins_out;
+	signal ioout : io_out_type;
+	signal ioin : io_in_type;
+	
+	signal pins_in  : io_pins_in_type;
+	signal pins_out : io_pins_out_type;
 
 	attribute altera_attribute : string;
 	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
