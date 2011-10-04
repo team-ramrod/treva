@@ -107,7 +107,7 @@ end process;
 process(din, accu, opd, log, arith, ioin)
 begin
 	if din.dec.add_sub='0' then
-		arith <= accu(7 downto 0) * opd(7 downto 0);
+		arith <= accu + opd;
 	else
 		arith <= accu - opd;
 	end if;

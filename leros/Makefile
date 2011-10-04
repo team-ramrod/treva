@@ -15,7 +15,7 @@ USB=true
 APP=count
 
 # Java application
-JAPP=Blink
+JAPP=blink
 JAPP_PKG=.
 
 # Altera FPGA configuration cable
@@ -80,10 +80,12 @@ japp:
 	make config
 
 rom: 
-	-rm -rf vhdl/generated
-	mkdir vhdl/generated
+	-rm -rf vhdl/generated/tmp
+	mkdir vhdl/generated/tmp
 	java -cp java/tools/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
-		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
+		leros.asm.LerosAsm -s asm -d vhdl/generated/tmp $(APP).asm
+	mv vhdl/generated/tmp/leros_rom.vhd vhdl/generated/$(APP).vhd
+	-rm -rf vhdl/generated/tmp
 
 jsim: rom
 	java -cp java/lib/leros-tools.jar -Dlog=false \
