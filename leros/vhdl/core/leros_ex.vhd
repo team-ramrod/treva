@@ -174,6 +174,15 @@ begin
 	end if;
 end process;
 
+process (clk, din.dec.addr_op)
+begin
+	if rising_edge(clk) then
+		if din.dec.addr_op = '1' then
+			dout.ar <= rddata;
+		end if;
+	end if;
+end process;
+
 -- the data memory (DM)
 -- read during write is usually undefined in an FPGA,
 -- but that is not modelled
