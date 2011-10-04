@@ -25,14 +25,14 @@ ll2:
     sub     1
     store   r0
 
-    nop
     brnz    ll1
     nop
 
     load    r1
     add     1
-    out     1
+    out     0
     store   r1
 
+    load 1
     nop
-    branch  loop
+    brnz    loop
