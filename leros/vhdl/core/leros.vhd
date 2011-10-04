@@ -67,7 +67,6 @@ begin
 	ioout.wr <= fdout.dec.outp;
 	ioout.wrdata <= exout.accu;
 	
-	
 	fd: entity work.leros_fedec port map (
 		clk, reset, fdin, fdout
 	);

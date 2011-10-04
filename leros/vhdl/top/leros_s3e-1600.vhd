@@ -11,9 +11,9 @@ port (
 	pbtn	: in std_logic_vector(3 downto 0);
 	sbtn	: in std_logic_vector(3 downto 0);
 );
-end leros_nexys2;
+end leros_s3e_1600;
 
-architecture rtl of leros_nexys2 is
+architecture rtl of leros_s3e_1600 is
 
 
 --
