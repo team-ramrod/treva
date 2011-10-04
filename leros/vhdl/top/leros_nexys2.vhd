@@ -50,7 +50,7 @@ entity leros_nexys2 is
 port (
 	clk     : in std_logic;
 	led     : out std_logic_vector(7 downto 0);
---	btn		: in std_logic_vector(3 downto 0);
+	btn		: in std_logic_vector(3 downto 0);
 --	rsrx	: in std_logic;
 	rstx	: out std_logic
 );
@@ -119,10 +119,10 @@ end process;
 	
 	rstx <= '0'; -- just a default to make ISE happy
 	
-process(clk_int)
+process(clk_int, btn)
 begin
 	if rising_edge(clk_int) then
-		if ioout.wr='1' then
+		if btn = "0010" then
 			outp <= ioout.wrdata;
 		end if;
 		led <= outp(0)(7 downto 0);
