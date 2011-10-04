@@ -1,2 +1,5 @@
 /vhdl/build
 /vhdl/waves
+
+/leros/vhdl/generated/leros_rom.vhd
+/leros/xilinx
