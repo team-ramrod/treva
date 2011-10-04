@@ -7,8 +7,7 @@ start:
     store   r1
 
 loop:
-    load    0
-    loadh   2
+    load    128
     store   r0
 
 ll1:
