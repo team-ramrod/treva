@@ -78,7 +78,7 @@ architecture rtl of leros_ex is
 	-- Xilinx and Altera FPGA initialize memory blocks to 0
 	signal dm : ram_array_type := (others => (others => (others => '0')));
 	
-	signal wrdata, rddata : std_logic_vector(15 downto 0);
+	signal wrdata, rddata : stream_std;
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
 	
 	signal wraddr_dly : std_logic_vector(DM_BITS-1 downto 0);
@@ -87,8 +87,8 @@ architecture rtl of leros_ex is
 
 begin
 
-	dout.accu <= std_logic_vector(accu(0));
-	dout.dm_data <= rddata;
+	dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(3 downto 0)))));
+	dout.dm_data <= rddata((to_integer(unsigned(din.imm(3 downto 0)))));
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
 	wraddr <= wraddr_dly;
@@ -103,7 +103,7 @@ begin
 	else
 		-- a MUX for IO will be added
 		for i in (stream-1) downto 0 loop
-			opd(i) <= unsigned(rddata);
+			opd(i) <= unsigned(rddata(i));
 		end loop;
 	end if;
 end process;
@@ -170,10 +170,14 @@ end process;
 process(din, accu, pc_dly)
 begin
 	if din.dec.jal='1' then
-		wrdata(IM_BITS-1 downto 0) <= pc_dly;
-		wrdata(15 downto IM_BITS) <= (others => '0');
+		for i in (stream-1) downto 0 loop
+			wrdata(i)(IM_BITS-1 downto 0) <= pc_dly;
+			wrdata(i)(15 downto IM_BITS) <= (others => '0');
+		end loop;
 	else
-		wrdata <= std_logic_vector(accu(0));
+		for i in (stream-1) downto 0 loop
+			wrdata(i) <= std_logic_vector(accu(i));
+			end loop;
 	end if;
 end process;	
 
@@ -212,9 +216,13 @@ begin
 		-- is store overloaded?
 		-- now we have only 'register' read and write
 		if din.dec.store='1' then
-			dm(0)(to_integer(unsigned(wraddr))) <= wrdata;
+		for i in (stream-1) downto 0 loop
+			dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
+		end loop;
 		end if;
-		rddata <= dm(0)(to_integer(unsigned(rdaddr)));
+		for i in (stream-1) downto 0 loop
+			rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
+		end loop;
 		
 	end if;
 end process;
