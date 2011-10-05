@@ -41,11 +41,16 @@ port map(
 process(clk_int)
 begin
 	if rising_edge(clk_int) then
-		cpu_in.rddata <= (others => '0');
+		cpu_in.rddata(0) <= (others => '0');
 		case cpu_out.addr is
+<<<<<<< HEAD
 			when "00000001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
 			when "00000010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
             when "00000011" => -- Read from uart
+=======
+			when "00000001" => cpu_in.rddata(0)(3 downto 0) <= pins_in.pbtn;
+			when "00000010" => cpu_in.rddata(0)(3 downto 0) <= pins_in.sbtn;
+>>>>>>> aa1c0d9848c6158687cb1599e5ca403b032a5890
 			when others => null;
 		end case;
 	end if;
@@ -55,8 +60,12 @@ process(clk_int)
 begin
 	if rising_edge(clk_int) then if cpu_out.wr = '1' then
 		case cpu_out.addr is
+<<<<<<< HEAD
 			when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
             when "00000010" => -- write uart
+=======
+			when "00000001" => pins_out.leds <= cpu_out.wrdata(0)(7 downto 0);
+>>>>>>> aa1c0d9848c6158687cb1599e5ca403b032a5890
 			when others => null;
 		end case;
 	end if; end if;

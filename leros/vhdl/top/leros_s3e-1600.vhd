@@ -11,8 +11,8 @@ port (
 	leds    : out std_logic_vector(7 downto 0);
 	pbtn    : in std_logic_vector(3 downto 0);
 	sbtn    : in std_logic_vector(3 downto 0)
-    uart_tx : out std_logic;
-    uart_rx : out std_logic;
+    	uart_tx : out std_logic;
+    	uart_rx : out std_logic;
 );
 end leros_s3e_1600;
 

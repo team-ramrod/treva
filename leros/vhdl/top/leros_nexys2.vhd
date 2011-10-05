@@ -122,7 +122,7 @@ end process;
 process(clk_int, btn)
 begin
 	if rising_edge(clk_int) then
-		if btn = "0010" then
+		if ioout.wr = '1' then
 			outp <= ioout.wrdata;
 		end if;
 		led <= outp(0)(7 downto 0);
