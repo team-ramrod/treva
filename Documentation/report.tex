@@ -1,0 +1,34 @@
+\documentclass[10pt,a4paper,conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage[cmex10]{amsmath}
+  \interdisplaylinepenalty=2500
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{fixltx2e}
+\usepackage{hyperref}
+\usepackage{listings}
+
+%\input{mystyle}
+
+\begin{document}
+  
+  \lstset{language=C}
+
+  \input{frontmatter}
+  \input{introduction}
+  \input{background}
+  \input{implementation}
+  \input{results}
+  \input{discussion}
+  \input{conclusion}
+
+  % Change to balance the columns on the last page
+ % \IEEEtriggeratref{2}
+
+  \bibliographystyle{IEEEtran}
+  \bibliography{IEEEabrv,report}
+ % \pagebreak
+  \input{appendices}
+\end{document}
+
+
