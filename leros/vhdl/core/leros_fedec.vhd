@@ -91,7 +91,7 @@ end process;
 process(decode, din, do_branch, imout, pc, pc_add, pc_op, zf)
 begin
 	-- should be checked in ModelSim
-	if unsigned(din.accu(0))=0 then
+	if unsigned(din.accu)=0 then
 		zf <= '1';
 	else
 		zf <= '0';
@@ -112,11 +112,11 @@ begin
 					do_branch <= '1';
 				end if;
 			when "011" =>		-- brp
-				if din.accu(0)(15)='0' then
+				if din.accu(15)='0' then
 					do_branch <= '1';
 				end if;
 			when "100" =>		-- brn
-				if din.accu(0)(15)='1' then
+				if din.accu(15)='1' then
 					do_branch <= '1';
 				end if;
 			when others =>
@@ -135,7 +135,7 @@ begin
 	pc_add <= pc + pc_op;
 	-- jump and link
 	if decode.jal='1' then
-		pc_next <= unsigned(din.accu(0)(IM_BITS-1 downto 0));
+		pc_next <= unsigned(din.accu(IM_BITS-1 downto 0));
 	else
 		pc_next <= pc_add;
 	end if;

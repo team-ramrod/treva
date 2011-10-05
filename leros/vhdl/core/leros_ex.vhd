@@ -89,9 +89,7 @@ begin
 	
 	process(accu)
 	begin
-		for i in 0 to (stream-1) loop
-			dout.accu(i) <= std_logic_vector(accu(i));
-		end loop;
+		dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(7 downto 4)))));
 	end process;
 	dout.dm_data <= rddata;
 	rdaddr <= din.dm_addr;
@@ -141,7 +139,7 @@ begin
 				a_mux(i) <= '0' & accu(i)(15 downto 1);
 			else
 				if din.dec.inp='1' then
-					a_mux(i) <= unsigned(ioin.rddata(i));
+					a_mux(to_integer(unsigned(din.imm(7 downto 4)))) <= unsigned(ioin.rddata);
 				else
 					a_mux(i) <= log(i);
 				end if;
