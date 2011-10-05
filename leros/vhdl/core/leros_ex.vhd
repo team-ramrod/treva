@@ -139,46 +139,9 @@ begin
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
-process(din.dec.jal, accu, pc_dly)
-begin
-	for i in 0 to (stream-1) loop
-		if din.dec.jal='1' then
-			wrdata(i)(IM_BITS-1 downto 0) <= pc_dly;
-			wrdata(i)(15 downto IM_BITS) <= (others => '0');
-		else
-			wrdata(i) <= std_logic_vector(accu(i));
-		end if;
-	end loop;
-end process;	
+out_mux : entity work.out_mux port map(din.dec.jal, accu, pc_dly, wrdata);
 
-
-process(clk, reset)
-begin
-		if reset='1' then
-		for i in 0 to (stream-1) loop
-			accu(i) <= (others => '0');
-		end loop;
-	--		dout.outp <= (others => '0');
-		elsif rising_edge(clk) then
-			if din.dec.al_ena = '1' then
-				for i in 0 to (stream-1) loop
-					accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
-				end loop;
-			end if;
-			if din.dec.ah_ena = '1' then
-				for i in 0 to (stream-1) loop
-					accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
-				end loop;
-			end if;
-			wraddr_dly <= din.dm_addr;
-			pc_dly <= din.pc;
-			-- a simple output port for the hello world example
-	--		if din.dec.outp='1' then
-	--			dout.outp <= std_logic_vector(accu);
-	--		end if;
-		end if;
-end process;
-
+accu_unit : entity work.accu port map(clk, reset, din.dec.al_ena, din.dec.ah_ena, din.pc, din.dm_addr, a_mux, pc_dly, wraddr_dly, accu);
 
 dm : entity work.dm port map(clk, din.dec.store, wrdata, wraddr , rdaddr, rddata);
 
