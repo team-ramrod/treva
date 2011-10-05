@@ -14,7 +14,7 @@ port (
 		dm_addr : in std_logic_vector(DM_BITS-1 downto 0);
 		
 		pc_dly : out std_logic_vector(IM_BITS-1 downto 0);
-		wraddr_dly : out std_logic_vector(DM_BITS-1 downto 0);
+		wraddr_dly : out std_logic_vector(DM_BITS-1 downto 0)
 	);
 end out_mux;
 
