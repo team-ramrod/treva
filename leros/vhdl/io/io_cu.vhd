@@ -44,17 +44,20 @@ port map(
 		rxd	 => pins_in.uart_rx
 	);
 
+with cpu_out.addr select
+	uart_addr <= '1' when "00000100"
+		     '0' when others;
+
 process(clk_int)
 begin
 	if rising_edge(clk_int) then
 		uart_rd <= '0';
-		uart_addr <= '0';
 		cpu_in.rddata <= (others => '0');
 		case cpu_out.addr is
 			when "00000001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
 			when "00000010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
-			when "00000011" => uart_addr <= '0'; cpu_in.rddata(7 downto 0) <= uart_data;
-			when "00000100" => uart_rd <= '1'; uart_addr <= '1'; cpu_in.rddata(7 downto 0) <= uart_data;
+			when "00000011" => cpu_in.rddata(7 downto 0) <= uart_data;
+			when "00000100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data;
 			when others => null;
 		end case;
 	end if;
@@ -64,11 +67,10 @@ process(clk_int)
 begin
 	if rising_edge(clk_int) then
 		uart_wr <= '0';
-		uart_addr <= '0';
 		if cpu_out.wr = '1' then
 			case cpu_out.addr is
 				when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
-				when "00000010" => uart_wr <= '1'; uart_addr <= '1';
+				when "00000010" => uart_wr <= '1';
 				when others => null;
 			end case;
 		end if; end if;
