@@ -18,3 +18,5 @@ vhdl/generated/%.vhd: asm/%.asm
 #	@mv vhdl/generated/leros_rom.vhd vhdl/generated/$*-leros.vhd
 	../bin/as $< | ../bin/vhdliser > $@
 
+clean:
+	rm -f $(addsuffix .vhd,$(addprefix vhdl/generated/,$(APPS)))
