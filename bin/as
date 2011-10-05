@@ -15,26 +15,36 @@ class Operand
     if op == nil
       @type = nil
     else
-      @type, @id, @mod = *op.chars
+      @type, @id = *op.chars
     end
   end
 
   def match op
-    return {} if @type == nil
-    return nil if op == nil
+    return {} if op == nil and @type == nil
+    return nil if @type == nil or op == nil
 
-    type, num, mod = *op.chars
+    type, *num = *op.chars
     case @type
     when 'a', 'r', 'v'
-      return nil if type != @type or mod != @mod
-      { @id => Integer(num) }
+      return nil if type != @type
+      { @id => Integer(num.join('')) }
     when 'm'
       begin
         { 'm' => twos_complement(Integer(op)) }
       rescue ArgumentError
         nil
       end
+    when '+'
+      begin
+        { @id => twos_complement(Integer(op)) }
+      rescue ArgumentError
+        nil
+      end
     end
+  end
+
+  def to_s
+    return "#{@type}#{@id}"
   end
 end
 
@@ -63,6 +73,10 @@ class Opcode
     end
     return val >> 8, val & 0xFF
   end
+
+  def to_s
+    return @chunks.map { |c| (c[:val] && c[:val].to_s(2).rjust(c[:len],'0')) || (c[:id] + c[:len].to_s) }.join(' ')
+  end
 end
 
 class Instruction
@@ -81,6 +95,10 @@ class Instruction
     return nil unless a != nil and b != nil
     c = @opcode.match(a.merge(b))
     return c
+  end
+
+  def to_s
+    return "#{@name}\t#{@op1}\t#{@op2}\t=>\t#{@opcode}"
   end
 
   class << self
@@ -131,7 +149,7 @@ begin
   line_no = 0
   instruction = 0
   output = []
-  input.map{|a|a.strip.squeeze(' ')}.each do |line|
+  input.map{|a|a.sub(/#.*/,'').strip.squeeze(' ')}.each do |line|
     line_no += 1
     label = line.sub(",", " ").split[0]
     case label
@@ -221,6 +239,9 @@ __END__
   LOAD      m   : 00100 00 1 m8
   LOADH     m   : 00101 00 1 m8
 
+  LOAD      rx +m : 01010 00 0 x8    01100 00 0 m8
+  STORE     rx +m : 01010 00 0 x8    01110 00 0 m8
+
 
 
   JAL       rx  : 01000 00 0 x8
@@ -229,10 +250,6 @@ __END__
 
   OUT       m   : 00111 00 0 m8
   IN        m   : 00111 10 0 m8
-
-
-
-  LOADADDR  rx  : 01010 00 0 x8
 
 
 

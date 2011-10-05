@@ -40,7 +40,7 @@ read_image:
 
 
 # read in bytes
-tits:    
+tits:
 # count = temp
     store r4
 
@@ -53,13 +53,12 @@ tits:
 
 # ram[i+20] = byte
     load r0
-    loadaddr r5
-	store (ar+20)
-    
+    store r5 +20
+
 # i++
     add 1
     store r5
-    
+
 # temp = count -1
     load r4
     sub 1
@@ -89,23 +88,20 @@ tits:
     loadh 0
     store r5
 ghost:
-    loadaddr r5
-    load (ar+20)
+    load r5 +20
     store r8        # r8 is image1 pixel
     load r5
     add r7          # r7 is image size
     store r10       # r10 is address of image2 pixel
-    loadaddr r10
-    load (ar+20)
+    load r10 +20
     add r8          # image2 px + image1 px
-    shr 1           # Divide by 2
+    shr             # Divide by 2
     store r9        # result = (im2 + im1)/2
     load r5         # address = i
     add r7          # address += size 
     add r7          # address += size 
-    store r11       
-    loadaddr r11    
-    store (ar+20)   # store result into address
+    store r11
+    store r11 +20   # store result into address
     load r5
     add 1
     store r5
