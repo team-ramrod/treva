@@ -69,15 +69,6 @@ architecture rtl of leros_ex is
 	signal accu, opd  : stream_unsigned;
 	signal arith, log, a_mux : stream_unsigned;
 	
-	-- the data ram
-	constant nwords : integer := 2 ** DM_BITS;
-		type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
-		type ram_array_type is array (0 to stream-1) of ram_type;
-		
-	-- 0 initialization is for simulation only
-	-- Xilinx and Altera FPGA initialize memory blocks to 0
-	signal dm : ram_array_type; --:= (others => (others =>'0'));
-	
 	signal wrdata, rddata : stream_std;
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
 	
@@ -188,23 +179,7 @@ begin
 		end if;
 end process;
 
--- the data memory (DM)
--- read during write is usually undefined in an FPGA,
--- but that is not modelled
-process (clk)
-begin
-	if rising_edge(clk) then
-		-- is store overloaded?
-		-- now we have only 'register' read and write
-		
-		if din.dec.store='1' then
-			for i in 0 to (stream-1) loop
-				dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
-			end loop;
-		end if;
-		for i in 0 to (stream-1) loop
-			rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
-		end loop;
-	end if;
-end process;
+
+dm : entity work.dm port map(clk, din.dec.store, wrdata, wraddr , rdaddr, rddata);
+
 end rtl;
