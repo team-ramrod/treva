@@ -38,7 +38,11 @@ package leros_types is
 	-- should this later go to a leros_config package?
 	constant DM_BITS : integer := 15;
 	constant IM_BITS : integer := 9;
+	constant stream : integer := 3;
 
+	type stream_std is array(0 to stream-1) of std_logic_vector(15 downto 0);
+	type stream_unsigned is array(0 to stream-1) of unsigned(15 downto 0);
+	
 	type alu_log_type is (op_and, op_or, op_xor, op_ld);
 	
 	type decode_type is record
@@ -71,8 +75,8 @@ package leros_types is
 	end record;
 
 	type fedec_in_type is record
-		accu : std_logic_vector(15 downto 0);
-		dm_data : std_logic_vector(15 downto 0);
+		accu : stream_std;
+		dm_data : stream_std;
 	end record;
 
 	type fedec_out_type is record
@@ -88,19 +92,19 @@ package leros_types is
 -- 	end record;
 
 	type ex_out_type is record
-		accu : std_logic_vector(15 downto 0);
-		dm_data : std_logic_vector(15 downto 0);
+		accu : stream_std;
+		dm_data : stream_std;
 	end record;
 	
 	type io_out_type is record
 		addr : std_logic_vector(7 downto 0);
 		rd : std_logic;
 		wr : std_logic;
-		wrdata : std_logic_vector(15 downto 0);
+		wrdata : stream_std;
 	end record;
 
 	type io_in_type is record
-		rddata : std_logic_vector(15 downto 0);
+		rddata : stream_std;
 	end record;
 	
 

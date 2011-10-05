@@ -1,5 +1,5 @@
 # Assembler files
-APPS = dm_count count blink
+APPS = dm_count count blink ghost
 
 # The VHDL project for Quartus
 QPROJ=altde2-70
