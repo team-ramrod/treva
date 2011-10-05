@@ -74,14 +74,15 @@ begin
 process(decode, din, imout)
 	variable addr : std_logic_vector(15 downto 0);
 begin
-	addr := std_logic_vector(unsigned(din.dm_data) + unsigned(imout.data(7 downto 0)));
+	addr := std_logic_vector(unsigned(din.dm_data(0)) + unsigned(imout.data(7 downto 0)));
+	
 	-- MUX for indirect load/store (from unregistered decode)
 	if decode.indls='1' then
 		dout.dm_addr <= addr(DM_BITS-1 downto 0);
 	else
 		-- If DM > 256 zero extend the varidx
 		dout.dm_addr <= (others => '0');
-		dout.dm_addr (7 downto 7) <= imout.data;
+		dout.dm_addr(7 downto 0) <= imout.data;
 	end if;
 
 end process;
@@ -90,7 +91,7 @@ end process;
 process(decode, din, do_branch, imout, pc, pc_add, pc_op, zf)
 begin
 	-- should be checked in ModelSim
-	if unsigned(din.accu)=0 then
+	if unsigned(din.accu(0))=0 then
 		zf <= '1';
 	else
 		zf <= '0';
@@ -111,11 +112,11 @@ begin
 					do_branch <= '1';
 				end if;
 			when "011" =>		-- brp
-				if din.accu(15)='0' then
+				if din.accu(0)(15)='0' then
 					do_branch <= '1';
 				end if;
 			when "100" =>		-- brn
-				if din.accu(15)='1' then
+				if din.accu(0)(15)='1' then
 					do_branch <= '1';
 				end if;
 			when others =>
@@ -134,7 +135,7 @@ begin
 	pc_add <= pc + pc_op;
 	-- jump and link
 	if decode.jal='1' then
-		pc_next <= unsigned(din.accu(IM_BITS-1 downto 0));
+		pc_next <= unsigned(din.accu(0)(IM_BITS-1 downto 0));
 	else
 		pc_next <= pc_add;
 	end if;
