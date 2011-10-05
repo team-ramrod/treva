@@ -10,7 +10,9 @@ port (
 	clk     : in std_logic;
 	leds     : out std_logic_vector(7 downto 0);
 	pbtn	: in std_logic_vector(3 downto 0);
-	sbtn	: in std_logic_vector(3 downto 0)
+	sbtn	: in std_logic_vector(3 downto 0);
+	rs232_dce_rxd : in  std_logic;
+	rs232_dce_txd : out std_logic
 );
 end leros_s3e_1600;
 
@@ -80,6 +82,9 @@ end process;
 		port map(clk_int, int_res, ioout, ioin);
 		
 		leds <= pins_out.leds;
+		pins_in.uart_rx <= rs232_dce_rxd;
+		rs232_dce_txd <= pins_out.uart_tx;
+		
 	io: entity work.io_cu
 		port map(clk_int, int_res,
 		pins_in,
