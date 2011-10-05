@@ -11,8 +11,8 @@ port (
 	leds    : out std_logic_vector(7 downto 0);
 	pbtn    : in std_logic_vector(3 downto 0);
 	sbtn    : in std_logic_vector(3 downto 0)
-    	uart_tx : out std_logic;
-    	uart_rx : out std_logic;
+    	rs232_dce_txd : out std_logic;
+    	rs232_dce_rxd : in  std_logic;
 );
 end leros_s3e_1600;
 
@@ -33,10 +33,10 @@ architecture rtl of leros_s3e_1600 is
 begin
 	pins_in.sbtn <= sbtn;
 	pins_in.pbtn <= pbtn;
-    pins_in.uart_tx <= uart_tx;
-    pins_in.uart_rx <= uart_rx;
+    	pins_in.uart_rx <= rs232_dce_rxd;
 
 	leds <= pins_out.leds;
+    	rs232_dce_txd <= pins_out.uart_tx;
 
 	-- input clock is 50 MHz
 	-- let's go for 200 MHz ;-)
@@ -70,5 +70,5 @@ begin
 
 
 	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
-	io  : entity work.io_cu port map(clk_int, pins_in, pins_out, ioout, ioin);
+	io  : entity work.io_cu port map(clk_int, int_res,  pins_in, pins_out, ioout, ioin);
 end rtl;

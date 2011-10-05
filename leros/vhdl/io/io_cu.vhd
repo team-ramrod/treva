@@ -8,6 +8,7 @@ use work.io_types.all;
 entity io_cu is
 	port (
 		clk_int  : in  std_logic;
+		int_res  : in  std_logic;
 		pins_in  : in  io_pins_in_type;
 		pins_out : out io_pins_out_type;
 		cpu_out   : in  io_out_type;
@@ -16,6 +17,11 @@ entity io_cu is
 end io_cu;
 
 architecture rtl of io_cu is
+	signal uart_addr : std_logic;
+	signal uart_rd   : std_logic;
+	signal uart_wr   : std_logic;
+	signal uart_data : std_logic_vector(7 downto 0);
+
 begin
 
 ua: entity work.uart generic map (
@@ -28,23 +34,27 @@ port map(
 		clk => clk_int,
 		reset => int_res,
 
-		address => ioout.addr(0),
-		wr_data => ioout.wrdata,
-		rd => ioout.rd,
-		wr => ioout.wr,
-		rd_data => ioin.rddata,
+		address => uart_addr,
+		wr_data => cpu_out.wr_data(7 downto 0), 
+		rd => uart_rd,
+		wr => uart_wr;
+		rd_data => uart_data,
 
-		txd	 => ser_txd,
-		rxd	 => ser_rxd
+		txd	 => pins_out.uart_tx,
+		rxd	 => pins_in.uart_rx
 	);
 
 process(clk_int)
 begin
 	if rising_edge(clk_int) then
+		uart_rd <= '0';
+		uart_addr <= '0';
 		cpu_in.rddata <= (others => '0');
 		case cpu_out.addr is
 			when "00000001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
 			when "00000010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
+			when "00000011" => uart_addr <= '0'; cpu_in.rddata(7 downto 0) <= uart_data;
+			when "00000100" => uart_rd <= '1'; uart_addr <= '1'; cpu_in.rddata(7 downto 0) <= uart_data;
 			when others => null;
 		end case;
 	end if;
@@ -52,13 +62,15 @@ end process;
 
 process(clk_int)
 begin
-	if rising_edge(clk_int) then if cpu_out.wr = '1' then
-		case cpu_out.addr is
-			when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
-            when "00000010" => -- write uart
-			when others => null;
-		end case;
-	end if; end if;
-end process;
-
+	if rising_edge(clk_int) then
+		uart_wr <= '0';
+		uart_addr <= '0';
+		if cpu_out.wr = '1' then
+			case cpu_out.addr is
+				when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
+				when "00000010" => uart_wr <= '1'; uart_addr <= '1';
+				when others => null;
+			end case;
+		end if; end if;
+	end process;
 end rtl;
