@@ -58,7 +58,7 @@ entity leros_ex is
 		clk : in std_logic;
 		reset : in std_logic;
 		din : in fedec_out_type;
-		ioin : in io_in_type;
+		ioin : in io_in_type; -- is just a 16 bit
 		dout : out ex_out_type
 	);
 end leros_ex;
@@ -125,17 +125,18 @@ begin
                 shift <= '0' & accu(15 downto 1); -- right shift
             when "10" =>
                 logic <= accu or opd;
-					 tmp := accu * opd;
+                tmp := accu * opd;
                 arith <= tmp(15 downto 0);
                 shift <= accu(14 downto 0) & accu(15); -- left rotate
             when "11" =>
                 logic <= accu xor opd;
-					 tmp := accu * opd;
+                tmp := accu * opd;
                 arith <= tmp(15 downto 0); -- WARNING! DIV instruction multiplies..
                 shift <= accu(0) & accu(15 downto 1); -- right rotate
-				when others =>
-					null;
-			end case;
+            when others =>
+                null;
+        end case;
+        
         case din.dec.op_class is
             when logic_flag =>
                 a_mux <= logic;
@@ -147,7 +148,8 @@ begin
                 a_mux <= unsigned(ioin.rddata);
             when others =>
                 a_mux <= (others => '0');
-		end case;
+        end case;
+        
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
