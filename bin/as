@@ -25,12 +25,12 @@ class Operand
 
     type, num, mod = *op.chars
     case @type
-    when 'a', 'r'
+    when 'a', 'r', 'v'
       return nil if type != @type or mod != @mod
       { @id => Integer(num) }
-    when 'v'
+    when 'm'
       begin
-        { 'v' => twos_complement(Integer(op)) }
+        { 'm' => twos_complement(Integer(op)) }
       rescue ArgumentError
         nil
       end
@@ -61,7 +61,7 @@ class Opcode
         val += (values[chunk[:id]] & (2**chunk[:len] - 1)) << pos
       end
     end
-    val
+    return val >> 8, val & 0xFF
   end
 end
 
@@ -75,7 +75,7 @@ class Instruction
 
   def match inst
     name, op1, op2 = *inst.split
-    return nil unless @name == name
+    return nil unless @name.upcase == name.upcase
     a = @op1.match(op1)
     b = @op2.match(op2)
     return nil unless a != nil and b != nil
@@ -110,16 +110,18 @@ instructions = Instruction.parse_lines(DATA)
 input = IO.readlines(ARGV[0])
 
 begin
-  instruction = 0
+  instruction = 1
   symbols = {}
   input.each do |line|
     chunks = line.sub(",", " ").split
     case chunks[0]
-      when '#', nil
+      when /^#/, /^\/\//, nil
         # Ignore comments and empty lines
 
-      when "label:"
-        symbols[chunks[1]] = instruction
+      when /^(\w+):/
+        symbols[$1] = instruction
+        line.sub!(/^\w+:/,"")
+        redo
 
       else
         instruction += 1
@@ -133,34 +135,40 @@ begin
     line_no += 1
     label = line.sub(",", " ").split[0]
     case label
-      when '#', nil, 'label:'
-        # Ignore comments, blank lines and label declarations
+      when  /^(\w+:)/
+        line.sub!($1,"")
+        line_no -= 1
+        redo
+      when /^#/, nil, /^\/\//
+        # Ignore comments and blank lines
 
       else
         instruction += 1
         line.split.each do |chunk|
-          if symbols.include? chunk
-            move_to = symbols[chunk]
-            diff = move_to - instruction
-            if diff < 1
-              diff = twos_complement(diff)
+          if symbols.include? chunk.sub(/^</,'').sub(/^>/,'')
+            move_to = symbols[chunk.sub(/^</,'').sub(/^>/,'')]
+            case chunk
+            when /^</
+              val = move_to - 1
+            when /^>/
+              val = move_to >> 8
+            else
+              val = move_to - instruction
             end
-            line[chunk] = diff.to_s
+            line[chunk] = val.to_s
           end
         end
-        # need to substitute labels
         inst = instructions.find { |inst| inst.match(line) }
         if inst
-          output << inst.match(line)
+          inst.match(line).each { |byte| output << byte }
         else
           raise "Unknown instruction [#{line}] near line [#{line_no}]"
         end
-        #output.push(convert_line(line, symbols, line_no))
     end
   end
 
 rescue RuntimeError => e
-  puts "There was an error parsing your file:\n\t#{e.message}"
+  $stderr.puts "There was an error parsing your file:\n\t#{e.message}"
   exit 1
 end
 
@@ -173,40 +181,92 @@ else
   output.each { |char| $stdout.putc(char) }
 end
 __END__
-  LDI   rx    m     : 100001      m8      x2
-  LD    rx    ay    : 000001  000 y2  00  x3
-  LD    rx    ay+   : 001001  000 y2  00  x3
-  LD    rx    ay-   : 010001  000 y2  00  x3
-  STI   ay    m     : 100101      m8      y2
-  ST    ay    rx    : 000101  000 y2  00  x3
-  ST    ay+   rx    : 001101  000 y2  00  x3
-  ST    ay-   rx    : 010101  000 y2  00  x3
-  MV    ry    rx    : 000100  00  y3  00  x3
-  MV    ayH   rx    : 000100  110 y2  00  x3
-  MV    ayL   rx    : 000100  100 y2  00  x3
-  MV    rx    ayH   : 000100  00  x3  110 y2
-  MV    rx    ayL   : 000100  00  x3  100 y2
-  AND   ry    rx    : 000010  00  y3  00  x3
-  OR    ry    rx    : 000110  00  y3  00  x3
-  NOT   ry    rx    : 001010  00  y3  00  x3
-  XOR   ry    rx    : 001110  00  y3  00  x3
-  ADD   ry    rx    : 010010  00  y3  00  x3
-  ADC   ry    rx    : 010110  00  y3  00  x3
-  SUB   ry    rx    : 011010  00  y3  00  x3
-  SBB   ry    rx    : 011110  00  y3  00  x3
-  NEG   ry    rx    : 001000  00  y3  00  x3
-  CMP   ry    rx    : 001100  00  y3  00  x3
-  BEQ   m           : 100011      m8  00
-  BNE   m           : 100111      m8  00
-  BLT   m           : 101011      m8  00
-  BGT   m           : 101111      m8  00
-  BC    m           : 110011      m8  00
-  BNC   m           : 110111      m8  00
-  RJMP  m           : 111011      m8  00
-  JMP   ay          : 011111  000 y2  000 00
+  NOP           : 00000 00 0 00000000
 
-  HALT              : 000000  000 00  000 00
-  ADDU  ry    rx    : 010010  00  y3  01  x3
-  SUBU  ry    rx    : 011010  00  y3  01  x3
-  SBBU  ry    rx    : 011110  00  y3  01  x3
-  RSH   ry    rx    : 010111  00  y3  00  x3
+
+
+  ADD       rx  : 00001 00 0 x8
+  SUB       rx  : 00001 01 0 x8
+  MULT      rx  : 00001 10 0 x8
+  DIV       rx  : 00001 11 0 x8
+
+  ADD       m   : 00001 00 1 m8
+  SUB       m   : 00001 01 1 m8
+  MULT      rx  : 00001 10 1 x8
+  DIV       rx  : 00001 11 1 x8
+
+
+
+  AND       rx  : 00100 01 0 x8
+  OR        rx  : 00100 10 0 x8
+  XOR       rx  : 00100 11 0 x8
+
+  AND       m   : 00100 01 1 m8
+  OR        m   : 00100 10 1 m8
+  XOR       m   : 00100 11 1 m8
+
+
+
+  SHL           : 00010 00 0 00000000
+  SHR           : 00010 01 0 00000000
+  ROL           : 00010 10 0 00000000
+  ROR           : 00010 11 0 00000000
+
+
+
+  LOAD      rx  : 00100 00 0 x8
+  LOADH     rx  : 00101 00 0 x8
+  STORE     rx  : 00110 00 0 x8
+
+  LOAD      m   : 00100 00 1 m8
+  LOADH     m   : 00101 00 1 m8
+
+
+
+  JAL       rx  : 01000 00 0 x8
+
+
+
+  OUT       m   : 00111 00 0 m8
+  IN        m   : 00111 10 0 m8
+
+
+
+  LOADADDR  rx  : 01010 00 0 x8
+
+
+
+  BRANCH    m   : 01001 00 0 m8
+  BRZ       m   : 01001 00 1 m8
+  BRNZ      m   : 01001 01 0 m8
+  BRP       m   : 01001 01 1 m8
+  BRN       m   : 01001 10 0 m8
+
+
+
+  VADD      vx  : 10001 00 0 x8
+  VSUB      vx  : 10001 01 0 x8
+  VMULT     vx  : 10001 10 0 x8
+  VDIV      vx  : 10001 10 0 x8
+
+  VADD      m   : 10001 00 1 m8
+  VSUB      m   : 10001 01 1 m8
+  VMULT     vx  : 10001 10 1 x8
+  VDIV      vx  : 10001 10 1 x8
+
+
+
+  VAND      vx  : 10100 01 0 x8
+  VOR       vx  : 10100 10 0 x8
+  VXOR      vx  : 10100 11 0 x8
+
+
+
+  VSHL          : 10010 00 0 00000000
+  VSHR          : 10010 01 0 00000000
+  VROL          : 10010 10 0 00000000
+  VROR          : 10010 11 0 00000000
+
+  VAND      m   : 10100 01 1 m8
+  VOR       m   : 10100 10 1 m8
+  VXOR      m   : 10100 11 1 m8
