@@ -97,14 +97,14 @@ begin
 process(din, rddata)
 begin
 	if din.dec.sel_imm='1' then
-		--for i in (stream-1) downto 0 loop
-			opd(0) <= unsigned(din.imm);
-		--end loop;
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(din.imm);
+		end loop;
 	else
 		-- a MUX for IO will be added
-		--for i in (stream-1) downto 0 loop
-			opd(0) <= unsigned(rddata);
-		--end loop;
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(rddata);
+		end loop;
 	end if;
 end process;
 
@@ -112,56 +112,56 @@ end process;
 process(din, accu, opd, log, arith, ioin)
 begin
 	if din.dec.add_sub='0' then
-		--for i in (stream-1) downto 0 loop
-			arith(0) <= accu(0) + opd(0);
-		--end loop;
+		for i in (stream-1) downto 0 loop
+			arith(i) <= accu(i) + opd(i);
+		end loop;
 	else
-		--for i in (stream-1) downto 0 loop
-			arith(0) <= accu(0) - opd(0);
-		--end loop;
+		for i in (stream-1) downto 0 loop
+			arith(i) <= accu(i) - opd(i);
+		end loop;
 	end if;
 
 	case din.dec.op is
 		when op_ld =>
-			--for i in (stream-1) downto 0 loop
-				log(0) <= opd(0);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				log(i) <= opd(i);
+			end loop;
 		when op_and =>
-			--for i in (stream-1) downto 0 loop
-				log(0) <= accu(0) and opd(0);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				log(i) <= accu(i) and opd(i);
+			end loop;
 		when op_or =>
-			--for i in (stream-1) downto 0 loop
-				log(0) <= accu(0) or opd(0);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				log(i) <= accu(i) or opd(i);
+			end loop;
 		when op_xor =>
-			--for i in (stream-1) downto 0 loop
-				log(0) <= accu(0) xor opd(0);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				log(i) <= accu(i) xor opd(i);
+			end loop;
 		when others =>
 			null;
 	end case;
 	
 	if din.dec.log_add='0' then
 		if din.dec.shr='1' then
-			--for i in (stream-1) downto 0 loop
-				a_mux(0) <= '0' & accu(0)(15 downto 1);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				a_mux(i) <= '0' & accu(i)(15 downto 1);
+			end loop;
 		else
 			if din.dec.inp='1' then
-				--for i in (stream-1) downto 0 loop
-					a_mux(0) <= unsigned(ioin.rddata);
-				--end loop;
+				for i in (stream-1) downto 0 loop
+					a_mux(i) <= unsigned(ioin.rddata);
+				end loop;
 			else
-				--for i in (stream-1) downto 0 loop
-					a_mux(0) <= log(0);
-				--end loop;
+				for i in (stream-1) downto 0 loop
+					a_mux(i) <= log(i);
+				end loop;
 			end if;
 		end if;
 	else
-		--for i in (stream-1) downto 0 loop	
-			a_mux(0) <= arith(0);
-		--end loop;
+		for i in (stream-1) downto 0 loop	
+			a_mux(i) <= arith(i);
+		end loop;
 	end if;
 		
 end process;
@@ -185,14 +185,14 @@ begin
 --		dout.outp <= (others => '0');
 	elsif rising_edge(clk) then
 		if din.dec.al_ena = '1' then
-			--for i in (stream-1) downto 0 loop
-				accu(0)(7 downto 0) <= a_mux(0)(7 downto 0);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
+			end loop;
 		end if;
 		if din.dec.ah_ena = '1' then
-			--for i in (stream-1) downto 0 loop
-				accu(0)(15 downto 8) <= a_mux(0)(15 downto 8);
-			--end loop;
+			for i in (stream-1) downto 0 loop
+				accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
+			end loop;
 		end if;
 		wraddr_dly <= din.dm_addr;
 		pc_dly <= din.pc;
