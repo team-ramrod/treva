@@ -61,7 +61,7 @@ class Opcode
 
   def match values
     val = 0
-    pos = 16
+    in_pos = pos = @chunks.map {|c| c[:len] }.inject(:+)
     @chunks.each do |chunk|
       if chunk.include? :val
         pos -= chunk[:len]
@@ -71,7 +71,14 @@ class Opcode
         val += (values[chunk[:id]] & (2**chunk[:len] - 1)) << pos
       end
     end
-    return val >> 8, val & 0xFF
+
+    bytes = []
+    while in_pos > 0
+      in_pos -= 8
+      bytes << (val & 0xFF)
+      val >>= 8
+    end
+    return bytes.reverse
   end
 
   def to_s
@@ -149,7 +156,7 @@ begin
   line_no = 0
   instruction = 0
   output = []
-  input.map{|a|a.sub(/#.*/,'').strip.squeeze(' ')}.each do |line|
+  input.map{|a|a.sub(/(#.*)|(\/\/.*)/,'').strip.squeeze(' ')}.each do |line|
     line_no += 1
     label = line.sub(",", " ").split[0]
     case label
