@@ -35,9 +35,9 @@ port map(
 		reset => int_res,
 
 		address => uart_addr,
-		wr_data => cpu_out.wr_data(7 downto 0), 
+		wr_data => cpu_out.wrdata(7 downto 0), 
 		rd => uart_rd,
-		wr => uart_wr;
+		wr => uart_wr,
 		rd_data => uart_data,
 
 		txd	 => pins_out.uart_tx,
@@ -68,6 +68,7 @@ begin
 	if rising_edge(clk_int) then
 		uart_wr <= '0';
 		if cpu_out.wr = '1' then
+			uart_addr <= '0';
 			case cpu_out.addr is
 				when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
 				when "00000010" => uart_wr <= '1';
