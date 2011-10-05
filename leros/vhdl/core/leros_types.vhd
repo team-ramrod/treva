@@ -76,7 +76,7 @@ package leros_types is
 
 	type fedec_in_type is record
 		accu : std_logic_vector(15 downto 0);
-		dm_data : stream_std;
+		dm_data : std_logic_vector(15 downto 0);
 	end record;
 
 	type fedec_out_type is record
@@ -93,7 +93,7 @@ package leros_types is
 
 	type ex_out_type is record
 		accu : std_logic_vector(15 downto 0);
-		dm_data : stream_std;
+		dm_data : std_logic_vector(15 downto 0);
 	end record;
 	
 	type io_out_type is record

@@ -27,13 +27,10 @@ architecture rtl of leros_s3e_1600 is
 	
 	signal pins_in  : io_pins_in_type;
 	signal pins_out : io_pins_out_type;
-
-	attribute altera_attribute : string;
-	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
 begin
 	pins_in.sbtn <= sbtn;
 	pins_in.pbtn <= pbtn;
-    	pins_in.uart_rx <= rs232_dce_rxd;
+	pins_in.uart_rx <= rs232_dce_rxd;
 
 	leds <= pins_out.leds;
     	rs232_dce_txd <= pins_out.uart_tx;
