@@ -9,8 +9,10 @@ entity leros_s3e_1600 is
 port (
 	clk     : in std_logic;
 	leds    : out std_logic_vector(7 downto 0);
-	pbtn	: in std_logic_vector(3 downto 0);
-	sbtn	: in std_logic_vector(3 downto 0)
+	pbtn    : in std_logic_vector(3 downto 0);
+	sbtn    : in std_logic_vector(3 downto 0)
+    	uart_tx : out std_logic;
+    	uart_rx : out std_logic;
 );
 end leros_s3e_1600;
 
@@ -31,6 +33,8 @@ architecture rtl of leros_s3e_1600 is
 begin
 	pins_in.sbtn <= sbtn;
 	pins_in.pbtn <= pbtn;
+    pins_in.uart_tx <= uart_tx;
+    pins_in.uart_rx <= uart_rx;
 
 	leds <= pins_out.leds;
 
