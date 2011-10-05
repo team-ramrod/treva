@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.leros_types.all;
+use work.io_types.all;
 
 entity leros_s3e_1600 is
 port (
@@ -33,6 +34,11 @@ architecture rtl of leros_s3e_1600 is
 	signal outp 			: std_logic_vector(15 downto 0);
 	signal inp 			: std_logic_vector(15 downto 0);
 	
+	signal data : std_logic_vector(15 downto 0);
+	signal wr_dly : std_logic;
+	
+	signal pins_in : io_pins_in_type;
+	signal pins_out : io_pins_out_type;
 begin
 
 	-- input clock is 50 MHz
@@ -72,41 +78,50 @@ end process;
 
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
+		
+		leds <= pins_out.leds;
+	io: entity work.io_cu
+		port map(clk_int, int_res,
+		pins_in,
+		pins_out,
+		ioout,
+		ioin);
 
 
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
--- Input definitions
-		case ioout.addr is
-			when "00000001" =>
-				inp(3 downto 0) <= pbtn;
-			when "00000010" =>
-				inp(3 downto 0) <= sbtn;
-			when others =>
-				null;
-		end case;
-		if ioout.rd='1' then
-			ioin.rddata <= inp;
-		end if;
-	end if;
-end process;
+--process(clk_int)
+--begin
+--	if rising_edge(clk_int) then
+---- Input definitions
+--		case ioout.addr is
+--			when "00000001" =>
+--				inp(3 downto 0) <= pbtn;
+--			when "00000010" =>
+--				inp(3 downto 0) <= sbtn;
+--			when others =>
+--				null;
+--		end case;
+--		if ioout.rd='1' then
+--			ioin.rddata <= inp;
+--		end if;
+--	end if;
+--end process;
 	
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
-		if ioout.wr='1' then
-			outp <= ioout.wrdata;
-		end if;
--- Output definitions
-		case ioout.addr is
-			when "00000001" =>
-				leds <= outp(7 downto 0);
-			when others =>
-				null;
-		end case;
-	end if;
-end process;
+--process(clk_int)
+--begin
+--	if rising_edge(clk_int) then
+--		if wr_dly = '1' then
+--			case ioout.addr is
+--				when "00000001" => leds <= data(7 downto 0);
+--				when others => null;
+--			end case;
+--			wr_dly <= '0';
+--		end if;
+--		if ioout.wr = '1' then
+--			data <= ioout.wrdata;
+--			wr_dly <= '1';
+--		end if;
+--	end if;
+--end process;
 
 
 end rtl;
