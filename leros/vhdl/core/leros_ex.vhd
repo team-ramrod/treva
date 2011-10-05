@@ -86,12 +86,9 @@ architecture rtl of leros_ex is
 	
 
 begin
-	
-	process(accu)
-	begin
-		dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(7 downto 4)))));
-	end process;
-	dout.dm_data <= rddata;
+
+	dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(7 downto 4)))));
+	dout.dm_data <= rddata(to_integer(unsigned(din.imm(7 downto 4))));
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
 	wraddr <= wraddr_dly;
