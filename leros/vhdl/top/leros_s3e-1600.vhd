@@ -36,8 +36,10 @@ architecture rtl of leros_s3e_1600 is
 begin
 	pins_in.sbtn <= sbtn;
 	pins_in.pbtn <= pbtn;
+	pins_in.uart_rx <= rs232_dce_rxd;
 
 	leds <= pins_out.leds;
+	rs232_dce_txd <= pins_out.uart_tx;
 
 	-- input clock is 50 MHz
 	-- let's go for 200 MHz ;-)
@@ -71,22 +73,6 @@ begin
 end process;
 
 
-	cpu: entity work.leros
-		port map(clk_int, int_res, ioout, ioin);
-		
-		leds <= pins_out.leds;
-		pins_in.uart_rx <= rs232_dce_rxd;
-		rs232_dce_txd <= pins_out.uart_tx;
-		
-	io: entity work.io_cu
-		port map(clk_int, int_res,
-		pins_in,
-		pins_out,
-		ioout,
-		ioin);
-
-
-
 	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
-	io  : entity work.io_cu port map(clk_int, pins_in, pins_out, ioout, ioin);
+	io  : entity work.io_cu port map(clk_int, int_res, pins_in, pins_out, ioout, ioin);
 end rtl;
