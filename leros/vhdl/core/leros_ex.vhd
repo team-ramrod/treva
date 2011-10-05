@@ -84,20 +84,7 @@ begin
 	-- address for the write needs one cycle delay
 	wraddr <= wraddr_dly;
 	
-	
-process(din.dec.sel_imm, din.imm, rddata)
-begin
-	if din.dec.sel_imm='1' then
-		for i in 0 to (stream-1) loop
-			opd(i) <= unsigned(din.imm);
-		end loop;
-	else
-		-- a MUX for IO will be added
-		for i in 0 to (stream-1) loop
-			opd(i) <= unsigned(rddata(i));
-		end loop;
-	end if;
-end process;
+in_mux : entity work.in_mux port map(din.dec.sel_imm, din.imm, rddata, opd);
 
 -- that's the ALU	
 process(din.dec.add_sub, din.dec.op, din.dec.log_add, din.dec.shr, din.dec.inp, accu, opd, log, arith, ioin)
