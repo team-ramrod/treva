@@ -14,7 +14,9 @@ tools:
 	cd java/tools/classes && jar cf ../lib/leros-tools.jar *
 
 vhdl/generated/%.vhd: asm/%.asm
-	java -cp java/tools/lib/leros-tools.jar:lib/antlr-3.3-complete.jar leros.asm.LerosAsm -s asm -d vhdl/generated $*.asm
-	@mv vhdl/generated/leros_rom.vhd vhdl/generated/$*-leros.vhd
+#	java -cp java/tools/lib/leros-tools.jar:lib/antlr-3.3-complete.jar leros.asm.LerosAsm -s asm -d vhdl/generated $*.asm
+#	@mv vhdl/generated/leros_rom.vhd vhdl/generated/$*-leros.vhd
 	../bin/as $< | ../bin/vhdliser > $@
 
+clean:
+	rm -f $(addsuffix .vhd,$(addprefix vhdl/generated/,$(APPS)))
