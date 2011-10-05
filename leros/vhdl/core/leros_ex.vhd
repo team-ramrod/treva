@@ -58,7 +58,7 @@ entity leros_ex is
 		clk : in std_logic;
 		reset : in std_logic;
 		din : in fedec_out_type;
-		ioin : in io_in_type;
+		ioin : in io_in_type; -- is just a 16 bit
 		dout : out ex_out_type
 	);
 end leros_ex;
@@ -150,7 +150,8 @@ begin
                 a_mux <= unsigned(ioin.rddata);
             when others =>
                 a_mux <= (others => '0');
-		end case;
+        end case;
+        
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
