@@ -94,7 +94,7 @@ begin
 	wraddr <= wraddr_dly;
 	
 	
-process(din, rddata)
+process(din.dec.sel_imm, din.imm, rddata)
 begin
 	if din.dec.sel_imm='1' then
 		for i in 0 to (stream-1) loop
@@ -109,7 +109,7 @@ begin
 end process;
 
 -- that's the ALU	
-process(din, accu, opd, log, arith, ioin)
+process(din.dec.add_sub, din.dec.op, din.dec.log_add, din.dec.shr, din.dec.inp, accu, opd, log, arith, ioin)
 begin
 	for i in 0 to (stream-1) loop
 		if din.dec.add_sub='0' then
@@ -148,7 +148,7 @@ begin
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
-process(din, accu, pc_dly)
+process(din.dec.jal, accu, pc_dly)
 begin
 	for i in 0 to (stream-1) loop
 		if din.dec.jal='1' then
