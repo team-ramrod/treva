@@ -66,16 +66,17 @@ end leros_ex;
 architecture rtl of leros_ex is
 
 	-- the accu
-	signal accu, opd  : unsigned(15 downto 0);
-	signal log, arith, a_mux : unsigned (15 downto 0);
+	signal accu, opd  : stream_unsigned;
+	signal log, arith, a_mux : stream_unsigned;
 	
 	-- the data ram
 	constant nwords : integer := 2 ** DM_BITS;
 	type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
+	type ram_array_type is array(0 to stream-1) of ram_type;
 
 	-- 0 initialization is for simulation only
 	-- Xilinx and Altera FPGA initialize memory blocks to 0
-	signal dm : ram_type := (others => (others => '0'));
+	signal dm : ram_array_type := (others => (others => (others => '0')));
 	
 	signal wrdata, rddata : std_logic_vector(15 downto 0);
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
@@ -86,7 +87,7 @@ architecture rtl of leros_ex is
 
 begin
 
-	dout.accu <= std_logic_vector(accu);
+	dout.accu <= std_logic_vector(accu(0));
 	dout.dm_data <= rddata;
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
@@ -96,10 +97,14 @@ begin
 process(din, rddata)
 begin
 	if din.dec.sel_imm='1' then
-		opd <= unsigned(din.imm);
+		--for i in (stream-1) downto 0 loop
+			opd(0) <= unsigned(din.imm);
+		--end loop;
 	else
 		-- a MUX for IO will be added
-		opd <= unsigned(rddata);
+		--for i in (stream-1) downto 0 loop
+			opd(0) <= unsigned(rddata);
+		--end loop;
 	end if;
 end process;
 
@@ -107,36 +112,56 @@ end process;
 process(din, accu, opd, log, arith, ioin)
 begin
 	if din.dec.add_sub='0' then
-		arith <= accu + opd;
+		--for i in (stream-1) downto 0 loop
+			arith(0) <= accu(0) + opd(0);
+		--end loop;
 	else
-		arith <= accu - opd;
+		--for i in (stream-1) downto 0 loop
+			arith(0) <= accu(0) - opd(0);
+		--end loop;
 	end if;
 
 	case din.dec.op is
 		when op_ld =>
-			log <= opd;
+			--for i in (stream-1) downto 0 loop
+				log(0) <= opd(0);
+			--end loop;
 		when op_and =>
-			log <= accu and opd;
+			--for i in (stream-1) downto 0 loop
+				log(0) <= accu(0) and opd(0);
+			--end loop;
 		when op_or =>
-			log <= accu or opd;
+			--for i in (stream-1) downto 0 loop
+				log(0) <= accu(0) or opd(0);
+			--end loop;
 		when op_xor =>
-			log <= accu xor opd;
+			--for i in (stream-1) downto 0 loop
+				log(0) <= accu(0) xor opd(0);
+			--end loop;
 		when others =>
 			null;
 	end case;
 	
 	if din.dec.log_add='0' then
 		if din.dec.shr='1' then
-			a_mux <= '0' & accu(15 downto 1);
+			--for i in (stream-1) downto 0 loop
+				a_mux(0) <= '0' & accu(0)(15 downto 1);
+			--end loop;
 		else
 			if din.dec.inp='1' then
-				a_mux <= unsigned(ioin.rddata);
+				--for i in (stream-1) downto 0 loop
+					a_mux(0) <= unsigned(ioin.rddata);
+				--end loop;
 			else
-				a_mux <= log;
+				--for i in (stream-1) downto 0 loop
+					a_mux(0) <= log(0);
+				--end loop;
 			end if;
 		end if;
 	else
-		a_mux <= arith;
+		--for i in (stream-1) downto 0 loop	
+			a_mux(0) <= arith(0);
+		--end loop;
 	end if;
 		
 end process;
@@ -148,7 +173,7 @@ begin
 		wrdata(IM_BITS-1 downto 0) <= pc_dly;
 		wrdata(15 downto IM_BITS) <= (others => '0');
 	else
-		wrdata <= std_logic_vector(accu);
+		wrdata <= std_logic_vector(accu(0));
 	end if;
 end process;	
 
@@ -156,14 +181,18 @@ end process;
 process(clk, reset)
 begin
 	if reset='1' then
-		accu <= (others => '0');
+		accu <= (others => (others => '0'));
 --		dout.outp <= (others => '0');
 	elsif rising_edge(clk) then
 		if din.dec.al_ena = '1' then
-			accu(7 downto 0) <= a_mux(7 downto 0);
+			--for i in (stream-1) downto 0 loop
+				accu(0)(7 downto 0) <= a_mux(0)(7 downto 0);
+			--end loop;
 		end if;
 		if din.dec.ah_ena = '1' then
-			accu(15 downto 8) <= a_mux(15 downto 8);
+			--for i in (stream-1) downto 0 loop
+				accu(0)(15 downto 8) <= a_mux(0)(15 downto 8);
+			--end loop;
 		end if;
 		wraddr_dly <= din.dm_addr;
 		pc_dly <= din.pc;
@@ -183,9 +212,9 @@ begin
 		-- is store overloaded?
 		-- now we have only 'register' read and write
 		if din.dec.store='1' then
-			dm(to_integer(unsigned(wraddr))) <= wrdata;
+			dm(0)(to_integer(unsigned(wraddr))) <= wrdata;
 		end if;
-		rddata <= dm(to_integer(unsigned(rdaddr)));
+		rddata <= dm(0)(to_integer(unsigned(rdaddr)));
 		
 	end if;
 end process;
