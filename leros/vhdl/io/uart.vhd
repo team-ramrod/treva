@@ -207,9 +207,9 @@ entity uart is
 -- SimpCon interface
 
 		address		: in std_logic;
-		wr_data		: in std_logic_vector(15 downto 0);
+		wr_data		: in std_logic_vector(7 downto 0);
 		rd, wr		: in std_logic;
-		rd_data		: out std_logic_vector(15 downto 0);
+		rd_data		: out std_logic_vector(7 downto 0);
 
 		txd		: out std_logic;
 		rxd		: in std_logic
@@ -276,8 +276,6 @@ architecture rtl of uart is
 	
 
 begin
-
-	rd_data(15 downto 8) <= (others => '0');
 
 -- This is a single cycle read, different from SimpCon	
 process(address, rd, rdrf, tdre, ua_dout)

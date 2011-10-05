@@ -10,9 +10,9 @@ port (
 	clk     : in std_logic;
 	leds    : out std_logic_vector(7 downto 0);
 	pbtn    : in std_logic_vector(3 downto 0);
-	sbtn    : in std_logic_vector(3 downto 0)
-    	rs232_dce_txd : out std_logic;
-    	rs232_dce_rxd : in  std_logic;
+	sbtn    : in std_logic_vector(3 downto 0);
+	rs232_dce_txd : out std_logic;
+	rs232_dce_rxd : in  std_logic
 );
 end leros_s3e_1600;
 
