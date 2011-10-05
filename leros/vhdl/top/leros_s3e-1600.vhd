@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 use work.leros_types.all;
 
-entity leros_nexys2 is
+entity leros_s3e_1600 is
 port (
 	clk     : in std_logic;
 	led     : out std_logic_vector(7 downto 0);
@@ -96,14 +96,14 @@ begin
 	if rising_edge(clk_int) then
 		if ioout.wr='1' then
 			outp <= ioout.wrdata;
+			-- Output definitions
+			case ioout.addr is
+				when "00000001" =>
+					led <= outp(7 downto 0);
+				when others =>
+					null;
+			end case;
 		end if;
--- Output definitions
-		case ioout.addr is
-			when "00000001" =>
-				led <= outp(7 downto 0);
-			when others =>
-				null;
-		end case;
 	end if;
 end process;
 
