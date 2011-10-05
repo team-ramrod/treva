@@ -47,10 +47,7 @@ package leros_types is
                 op : std_logic_vector(1 downto 0);
 		al_ena : std_logic;
 		ah_ena : std_logic;
-		--log_add : std_logic; -- dont need
-		--add_sub : std_logic; -- dont need
                 op_class : op_class_type;
-		--shr : std_logic; -- dont need
 		sel_imm : std_logic;
 		store : std_logic;
 		outp : std_logic;
