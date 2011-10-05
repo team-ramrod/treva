@@ -6,8 +6,7 @@ start:
     store     r1
     load      0
     loadh     0
-    loadaddr  r1
-    store     (ar+8)
+    store     r1  +8
 
 loop:
     load      128
@@ -31,12 +30,10 @@ ll2:
     brnz      ll1
     nop
 
-    loadaddr  r1
-    load      (ar+8)
+    load      r1    +8
     add       1
     out       0
-    loadaddr  r1
-    store     (ar+8)
+    store     r1    +8
 
     load      1
     nop
