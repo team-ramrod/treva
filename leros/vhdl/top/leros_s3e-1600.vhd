@@ -7,9 +7,9 @@ use work.leros_types.all;
 entity leros_s3e_1600 is
 port (
 	clk     : in std_logic;
-	led     : out std_logic_vector(7 downto 0);
+	leds     : out std_logic_vector(7 downto 0);
 	pbtn	: in std_logic_vector(3 downto 0);
-	sbtn	: in std_logic_vector(3 downto 0);
+	sbtn	: in std_logic_vector(3 downto 0)
 );
 end leros_s3e_1600;
 
@@ -73,25 +73,6 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
-		ua: entity work.uart generic map (
-			clk_freq => 100000000, -- 100MHz
-			baud_rate => 115200,
-			txf_depth => 1,
-			rxf_depth => 1
-		)
-		port map(
-			clk => clk_int,
-			reset => int_res,
-
-			address => ioout.addr(0),
-			wr_data => ioout.wrdata,
-			rd => ioout.rd,
-			wr => ioout.wr,
-			rd_data => ioin.rddata,
-
-			txd	 => ser_txd,
-			rxd	 => ser_rxd
-	);
 
 process(clk_int)
 begin
@@ -99,9 +80,9 @@ begin
 -- Input definitions
 		case ioout.addr is
 			when "00000001" =>
-				inp <= pbtn;
+				inp(3 downto 0) <= pbtn;
 			when "00000010" =>
-				inp <= sbtn;
+				inp(3 downto 0) <= sbtn;
 			when others =>
 				null;
 		end case;
@@ -120,8 +101,7 @@ begin
 -- Output definitions
 		case ioout.addr is
 			when "00000001" =>
-				led <= outp(7 downto 0);
-            when "" =>
+				leds <= outp(7 downto 0);
 			when others =>
 				null;
 		end case;
