@@ -17,18 +17,10 @@ port (
 end leros_s3e_1600;
 
 architecture rtl of leros_s3e_1600 is
-
-
---
---	Signals
---
 	signal clk_int			: std_logic;
 
 	signal int_res			: std_logic;
 	signal res_cnt			: unsigned(2 downto 0) := "000";	-- for the simulation
-
-	attribute altera_attribute : string;
-	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
 
 	signal ioout : io_out_type;
 	signal ioin : io_in_type;
@@ -42,6 +34,10 @@ architecture rtl of leros_s3e_1600 is
 	signal pins_in : io_pins_in_type;
 	signal pins_out : io_pins_out_type;
 begin
+	pins_in.sbtn <= sbtn;
+	pins_in.pbtn <= pbtn;
+
+	leds <= pins_out.leds;
 
 	-- input clock is 50 MHz
 	-- let's go for 200 MHz ;-)
@@ -60,11 +56,8 @@ begin
 		LOCKED_OUT => open
 	);
 
---	clk_int <= clk;
---
 --	internal reset generation
 --	should include the PLL lock signal
---
 
 process(clk_int)
 begin
@@ -93,40 +86,7 @@ end process;
 		ioin);
 
 
---process(clk_int)
---begin
---	if rising_edge(clk_int) then
----- Input definitions
---		case ioout.addr is
---			when "00000001" =>
---				inp(3 downto 0) <= pbtn;
---			when "00000010" =>
---				inp(3 downto 0) <= sbtn;
---			when others =>
---				null;
---		end case;
---		if ioout.rd='1' then
---			ioin.rddata <= inp;
---		end if;
---	end if;
---end process;
-	
---process(clk_int)
---begin
---	if rising_edge(clk_int) then
---		if wr_dly = '1' then
---			case ioout.addr is
---				when "00000001" => leds <= data(7 downto 0);
---				when others => null;
---			end case;
---			wr_dly <= '0';
---		end if;
---		if ioout.wr = '1' then
---			data <= ioout.wrdata;
---			wr_dly <= '1';
---		end if;
---	end if;
---end process;
 
-
+	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
+	io  : entity work.io_cu port map(clk_int, pins_in, pins_out, ioout, ioin);
 end rtl;
