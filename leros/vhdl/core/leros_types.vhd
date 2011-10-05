@@ -38,7 +38,7 @@ package leros_types is
 	-- should this later go to a leros_config package?
 	constant DM_BITS : integer := 8;
 	constant IM_BITS : integer := 9;
-	constant stream : integer := 1;
+	constant stream : integer := 2;
 
 	type stream_std is array(0 to stream-1) of std_logic_vector(15 downto 0);
 	type stream_unsigned is array(0 to stream-1) of unsigned(15 downto 0);

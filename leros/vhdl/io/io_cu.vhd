@@ -45,7 +45,7 @@ port map(
 	);
 
 with cpu_out.addr select
-	uart_addr <= '1' when "00000100"
+	uart_addr <= '1' when "00000100",
 		     '0' when others;
 
 process(clk_int)
@@ -68,7 +68,6 @@ begin
 	if rising_edge(clk_int) then
 		uart_wr <= '0';
 		if cpu_out.wr = '1' then
-			uart_addr <= '0';
 			case cpu_out.addr is
 				when "00000001" => pins_out.leds <= cpu_out.wrdata(7 downto 0);
 				when "00000010" => uart_wr <= '1';
