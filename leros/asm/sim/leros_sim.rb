@@ -2,10 +2,12 @@
 $NUM_REGISTERS = 1000
 
 class Treva
-    @attr_accessor :pc
+    attr_accessor :pc, :registers
 
-    def initialize file
-        @registers = Array.new($NUM_REGISTERS)
+    def initialize file, io = nil
+        @accu = 0
+        @io = io
+        @registers = Array.new($NUM_REGISTERS, 0)
         @pc = 0
         @app = Array.new
         @labels = Hash.new
@@ -29,21 +31,27 @@ class Treva
     end
 
     def run
-        while @pc < @app.size
-            step
+        25.times do |i|
+            if @pc < @app.size
+                puts "%d: %s. Accu = %d" % [@pc, @app[@pc], @accu]
+                step
+            end
         end
     end
 
     def get_value arg
-        if arg.index('r')
-            @registers[arg[1..-1].to_i]
-        else
-            arg.to_i
-        end
+        val =
+            if arg.index('r') != nil
+                @registers[arg[1..-1].to_i]
+            else
+                arg.to_i
+            end
+        fail if val == nil
+        val
     end
 
     def load arg
-        @accu = get_value arg if ar.index('<').nil?
+        @accu = get_value arg if arg.index('<').nil?
     end
 
     def store arg
@@ -58,39 +66,40 @@ class Treva
         @accu -= get_value arg
     end
 
+    def and arg
+        puts @accu
+        @accu = @accu.to_i & (get_value arg).to_i
+    end
+
     def mult arg
         @accu *= get_value arg
     end
 
     def loadh arg
-        @dest = arg[1..-1]
+        @accu = @labels[arg[1..-1]]
     end
 
     def jal arg
-       @return_point = @pc
-       @pc = @accu
+        @registers[get_value arg] = @pc-1
+        @pc = @accu
     end
 
     def brnz arg
-        @pc = labels[arg] if @accu != 0
+        @pc = @labels[arg] if @accu != 0
     end
 
     def brz arg
-        @pc = labels[arg] unless @accu != 0
+        @pc = @labels[arg] unless @accu != 0
+    end
+
+    def in args
+        @accu = @io.in(args[0], args[1])
+    end
+
+    def out arg
     end
 
     def nop arg
         #do nothing
     end
-end
-
-
-files = Array['asm/ghost.asm']
-
-files.each do|a|
-    Treva.new(a).run
-end
-
-ARGV.each do|a|
-    Treva.new(a).run
 end
