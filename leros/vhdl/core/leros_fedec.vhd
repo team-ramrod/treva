@@ -75,7 +75,6 @@ process(decode, din, imout)
 	variable addr : std_logic_vector(15 downto 0);
 begin
 	addr := std_logic_vector(unsigned(din.dm_data) + unsigned(imout.data(7 downto 0)));
-	
 	-- MUX for indirect load/store (from unregistered decode)
 	if decode.indls='1' then
 		dout.dm_addr <= addr(DM_BITS-1 downto 0);

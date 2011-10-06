@@ -67,7 +67,16 @@ architecture rtl of leros_ex is
 
 	-- the accu
 	signal accu, opd  : stream_unsigned;
-	signal arith, log, a_mux : stream_unsigned;
+	signal log, arith, a_mux : stream_unsigned;
+	
+	-- the data ram
+	constant nwords : integer := 2 ** DM_BITS;
+	type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
+	type ram_array_type is array(0 to stream-1) of ram_type;
+
+	-- 0 initialization is for simulation only
+	-- Xilinx and Altera FPGA initialize memory blocks to 0
+	signal dm : ram_array_type := (others => (others => (others => '0')));
 	
 	signal wrdata, rddata : stream_std;
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
@@ -78,58 +87,145 @@ architecture rtl of leros_ex is
 
 begin
 
-	dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(7 downto 4)))));
-	dout.dm_data <= rddata(to_integer(unsigned(din.imm(7 downto 4))));
+	dout.accu <= std_logic_vector(accu(to_integer(unsigned(din.imm(3 downto 0)))));
+	dout.dm_data <= rddata((to_integer(unsigned(din.imm(3 downto 0)))));
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
 	wraddr <= wraddr_dly;
 	
-in_mux : entity work.in_mux port map(din.dec.sel_imm, din.imm, rddata, opd);
+	
+process(din, rddata)
+begin
+	if din.dec.sel_imm='1' then
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(din.imm);
+		end loop;
+	else
+		-- a MUX for IO will be added
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(rddata(i));
+		end loop;
+	end if;
+end process;
 
 -- that's the ALU	
-process(din.dec.add_sub, din.dec.op, din.dec.log_add, din.dec.shr, din.dec.inp, accu, opd, log, arith, ioin)
+process(din, accu, opd, log, arith, ioin)
 begin
-	for i in 0 to (stream-1) loop
-		if din.dec.add_sub='0' then
+	if din.dec.add_sub='0' then
+		for i in (stream-1) downto 0 loop
 			arith(i) <= accu(i) + opd(i);
-		else
+		end loop;
+	else
+		for i in (stream-1) downto 0 loop
 			arith(i) <= accu(i) - opd(i);
-		end if;
+		end loop;
+	end if;
 
-		case din.dec.op is
-			when op_ld =>
+	case din.dec.op is
+		when op_ld =>
+			for i in (stream-1) downto 0 loop
 				log(i) <= opd(i);
-			when op_and =>
+			end loop;
+		when op_and =>
+			for i in (stream-1) downto 0 loop
 				log(i) <= accu(i) and opd(i);
-			when op_or =>
+			end loop;
+		when op_or =>
+			for i in (stream-1) downto 0 loop
 				log(i) <= accu(i) or opd(i);
-			when op_xor =>
+			end loop;
+		when op_xor =>
+			for i in (stream-1) downto 0 loop
 				log(i) <= accu(i) xor opd(i);
-			when others =>
-				null;
-		end case;
-		
-		if din.dec.log_add='0' then
-			if din.dec.shr='1' then
+			end loop;
+		when others =>
+			null;
+	end case;
+	
+	if din.dec.log_add='0' then
+		if din.dec.shr='1' then
+			for i in (stream-1) downto 0 loop
 				a_mux(i) <= '0' & accu(i)(15 downto 1);
-			else
-				if din.dec.inp='1' then
-					a_mux(to_integer(unsigned(din.imm(7 downto 4)))) <= unsigned(ioin.rddata);
-				else
-					a_mux(i) <= log(i);
-				end if;
-			end if;
+			end loop;
 		else
-			a_mux(i) <= arith(i);
+			if din.dec.inp='1' then
+				for i in (stream-1) downto 0 loop
+					a_mux(i) <= unsigned(ioin.rddata);
+				end loop;
+			else
+				for i in (stream-1) downto 0 loop
+					a_mux(i) <= log(i);
+				end loop;
+			end if;
 		end if;
-	end loop;
+	else
+		for i in (stream-1) downto 0 loop	
+			a_mux(i) <= arith(i);
+		end loop;
+	end if;
+		
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
-out_mux : entity work.out_mux port map(din.dec.jal, accu, pc_dly, wrdata);
+process(din, accu, pc_dly)
+begin
+	if din.dec.jal='1' then
+		for i in (stream-1) downto 0 loop
+			wrdata(i)(IM_BITS-1 downto 0) <= pc_dly;
+			wrdata(i)(15 downto IM_BITS) <= (others => '0');
+		end loop;
+	else
+		for i in (stream-1) downto 0 loop
+			wrdata(i) <= std_logic_vector(accu(i));
+			end loop;
+	end if;
+end process;	
 
-accu_unit : entity work.accu port map(clk, reset, din.dec.al_ena, din.dec.ah_ena, din.pc, din.dm_addr, a_mux, pc_dly, wraddr_dly, accu);
 
-dm : entity work.dm port map(clk, din.dec.store, wrdata, wraddr , rdaddr, rddata);
+process(clk, reset)
+begin
+	if reset='1' then
+		accu <= (others => (others => '0'));
+--		dout.outp <= (others => '0');
+	elsif rising_edge(clk) then
+		if din.dec.al_ena = '1' then
+			for i in (stream-1) downto 0 loop
+				accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
+			end loop;
+		end if;
+		if din.dec.ah_ena = '1' then
+			for i in (stream-1) downto 0 loop
+				accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
+			end loop;
+		end if;
+		wraddr_dly <= din.dm_addr;
+		pc_dly <= din.pc;
+		-- a simple output port for the hello world example
+---             if din.dec.outp='1' then
+---                     dout.outp <= std_logic_vector(accu);
+---             end if;
+	end if;
+end process;
 
+-- the data memory (DM)
+-- read during write is usually undefined in an FPGA,
+-- but that is not modelled
+process (clk)
+begin
+	if rising_edge(clk) then
+		-- is store overloaded?
+		-- now we have only 'register' read and write
+		if din.dec.store='1' then
+		for i in (stream-1) downto 0 loop
+			dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
+		end loop;
+		end if;
+		for i in (stream-1) downto 0 loop
+			rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
+		end loop;
+		
+	end if;
+end process;
+
+	
 end rtl;
