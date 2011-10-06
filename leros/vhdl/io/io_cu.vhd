@@ -76,6 +76,7 @@ begin
 				when "00000010" => uart_wr <= '1'; uart_data_out <= data(7 downto 0);
 				when others => null;
 			end case;
+			wr_dly <= '0';
 		end if;
 		if cpu_out.wr = '1' then
 			data <= cpu_out.wrdata;

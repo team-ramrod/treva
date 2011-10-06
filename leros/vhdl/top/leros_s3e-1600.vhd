@@ -8,29 +8,37 @@ use work.io_types.all;
 entity leros_s3e_1600 is
 port (
 	clk     : in std_logic;
-	leds    : out std_logic_vector(7 downto 0);
-	pbtn    : in std_logic_vector(3 downto 0);
-	sbtn    : in std_logic_vector(3 downto 0);
-	rs232_dce_txd : out std_logic;
-	rs232_dce_rxd : in  std_logic
+	leds     : out std_logic_vector(7 downto 0);
+	pbtn	: in std_logic_vector(3 downto 0);
+	sbtn	: in std_logic_vector(3 downto 0);
+	rs232_dce_rxd : in  std_logic;
+	rs232_dce_txd : out std_logic
 );
 end leros_s3e_1600;
 
 architecture rtl of leros_s3e_1600 is
 	signal clk_int			: std_logic;
-	signal reset			: std_logic;
+
+	signal int_res			: std_logic;
+	signal res_cnt			: unsigned(2 downto 0) := "000";	-- for the simulation
 
 	signal ioout : io_out_type;
 	signal ioin : io_in_type;
 	
-	signal pins_in  : io_pins_in_type;
+	signal outp 			: std_logic_vector(15 downto 0);
+	signal inp 			: std_logic_vector(15 downto 0);
+	
+	signal data : std_logic_vector(15 downto 0);
+	signal wr_dly : std_logic;
+	
+	signal pins_in : io_pins_in_type;
 	signal pins_out : io_pins_out_type;
 begin
-	pins_in.sbtn    <= sbtn;
-	pins_in.pbtn    <= pbtn;
+	pins_in.sbtn <= sbtn;
+	pins_in.pbtn <= pbtn;
 	pins_in.uart_rx <= rs232_dce_rxd;
 
-	leds          <= pins_out.leds;
+	leds <= pins_out.leds;
 	rs232_dce_txd <= pins_out.uart_tx;
 
 	-- input clock is 50 MHz
@@ -50,10 +58,21 @@ begin
 		LOCKED_OUT => open
 	);
 
-	rsgen : entity work.reset_generator port map(clk_int, reset);
-	cpu : entity work.leros port map(clk_int, reset, ioout, ioin);
-	io  : entity work.io_cu port map(clk_int, reset,  pins_in, pins_out, ioout, ioin);
+--	internal reset generation
+--	should include the PLL lock signal
+
+process(clk_int)
+begin
+	if rising_edge(clk_int) then
+		if (res_cnt/="111") then
+			res_cnt <= res_cnt+1;
+		end if;
+
+		int_res <= not res_cnt(0) or not res_cnt(1) or not res_cnt(2);
+	end if;
+end process;
+
+
+	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
+	io  : entity work.io_cu port map(clk_int, int_res, pins_in, pins_out, ioout, ioin);
 end rtl;
-
-
-	
