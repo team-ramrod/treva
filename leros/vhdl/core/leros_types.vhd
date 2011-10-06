@@ -43,14 +43,18 @@ package leros_types is
 	type stream_std is array(0 to stream-1) of std_logic_vector(15 downto 0);
 	type stream_unsigned is array(0 to stream-1) of unsigned(15 downto 0);
 	
-	type alu_log_type is (op_and, op_or, op_xor, op_ld);
+	--type alu_log_type is (op_and, op_or, op_xor, op_ld);
+	
+	type op_class_type is (arith_flag, logic_flag, shift_type, io_flag);
 	
 	type decode_type is record
-		op : alu_log_type;
+		--op : alu_log_type;
+		op : std_logic_vector(1 downto 0);
 		al_ena : std_logic;
 		ah_ena : std_logic;
+		op_class : op_class_type;
 		log_add : std_logic;
-		add_sub : std_logic;
+		add_sub : std_logic; -- pretend this is op_class
 		shr : std_logic;
 		sel_imm : std_logic;
 		store : std_logic;
