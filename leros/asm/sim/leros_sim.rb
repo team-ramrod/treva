@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 $NUM_REGISTERS = 1000
 
-$PRINT_STEPS = false
+$PRINT_STEPS = true
 
 class Treva
     attr_accessor :pc, :registers
@@ -78,6 +78,8 @@ class Treva
         else
             if arg.index('<').nil?
                 @accu = get_value arg
+            else
+                @accu = @labels[arg[1..-1]]
             end
         end
     end
