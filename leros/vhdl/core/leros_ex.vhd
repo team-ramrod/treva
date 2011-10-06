@@ -58,7 +58,7 @@ entity leros_ex is
 		clk : in std_logic;
 		reset : in std_logic;
 		din : in fedec_out_type;
-		ioin : in io_in_type;
+		ioin : in io_in_type; -- is just a 16 bit
 		dout : out ex_out_type
 	);
 end leros_ex;
@@ -66,8 +66,11 @@ end leros_ex;
 architecture rtl of leros_ex is
 
 	-- the accu
-	signal accu, opd  : stream_unsigned;
-	signal log, arith, a_mux : stream_unsigned;
+    -- Holding off on the multi-ALUs until tested
+	--signal accu, opd  : stream_unsigned;
+	--signal log, arith, a_mux : stream_unsigned;
+	signal accu, opd  : unsigned(15 downto 0);
+	signal logic, arith, shift, a_mux : unsigned (15 downto 0);
 	
 	signal wrdata, rddata : stream_std;
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
@@ -83,65 +86,122 @@ begin
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
 	wraddr <= wraddr_dly;
-		
-in_mux : entity work.in_mux port map(din.dec.sel_imm, din.imm, rddata, opd);
+	
+  -- again, holding off on modularisng
+--in_mux : entity work.in_mux port map(din.dec.sel_imm, din.imm, rddata, opd);
+process(din, rddata)
+--process(din, ioin.rddata)
+begin
+	if din.dec.sel_imm='1' then
+		opd <= unsigned(din.imm);
+	else
+		-- a MUX for IO will be added
+		opd <= unsigned(rddata);
+                --opd <= unsigned(ioin.rddata);
+	end if;
+end process;
 
 -- that's the ALU	
-process(din, accu, opd, log, arith, ioin)
+process(din, accu, opd, logic, arith, shift, ioin)
+variable tmp : unsigned (31 downto 0);
 begin
-	if din.dec.add_sub='0' then
-		for i in (stream-1) downto 0 loop
-			arith(i) <= accu(i) + opd(i);
-		end loop;
-	else
-		for i in (stream-1) downto 0 loop
-			arith(i) <= accu(i) - opd(i);
-		end loop;
-	end if;
 
-	case din.dec.op is
-		when op_ld =>
-			for i in (stream-1) downto 0 loop
-				log(i) <= opd(i);
-			end loop;
-		when op_and =>
-			for i in (stream-1) downto 0 loop
-				log(i) <= accu(i) and opd(i);
-			end loop;
-		when op_or =>
-			for i in (stream-1) downto 0 loop
-				log(i) <= accu(i) or opd(i);
-			end loop;
-		when op_xor =>
-			for i in (stream-1) downto 0 loop
-				log(i) <= accu(i) xor opd(i);
-			end loop;
-		when others =>
-			null;
-	end case;
+  -- Zac's super ALU
+	--if din.dec.add_sub='0' then
+		--for i in (stream-1) downto 0 loop
+			--arith(i) <= accu(i) + opd(i);
+		--end loop;
+	--else
+		--for i in (stream-1) downto 0 loop
+			--arith(i) <= accu(i) - opd(i);
+		--end loop;
+	--end if;
+
+	--case din.dec.op is
+	--	when op_ld =>
+			--for i in (stream-1) downto 0 loop
+				--log(i) <= opd(i);
+			--end loop;
+		--when op_and =>
+			--for i in (stream-1) downto 0 loop
+				--log(i) <= accu(i) and opd(i);
+			--end loop;
+		--when op_or =>
+			--for i in (stream-1) downto 0 loop
+				--log(i) <= accu(i) or opd(i);
+			--end loop;
+		--when op_xor =>
+			--for i in (stream-1) downto 0 loop
+				--log(i) <= accu(i) xor opd(i);
+			---end loop;
+		---when others =>
+			--null;
+	--end case;
 	
-	if din.dec.log_add='0' then
-		if din.dec.shr='1' then
-			for i in (stream-1) downto 0 loop
-				a_mux(i) <= '0' & accu(i)(15 downto 1);
-			end loop;
-		else
-			if din.dec.inp='1' then
-				for i in (stream-1) downto 0 loop
-					a_mux(i) <= unsigned(ioin.rddata);
-				end loop;
-			else
-				for i in (stream-1) downto 0 loop
-					a_mux(i) <= log(i);
-				end loop;
-			end if;
-		end if;
-	else
-		for i in (stream-1) downto 0 loop	
-			a_mux(i) <= arith(i);
-		end loop;
-	end if;
+	--if din.dec.log_add='0' then
+		--if din.dec.shr='1' then
+			--for i in (stream-1) downto 0 loop
+				--a_mux(i) <= '0' & accu(i)(15 downto 1);
+			--end loop;
+		--else
+			--if din.dec.inp='1' then
+				--for i in (stream-1) downto 0 loop
+					--a_mux(i) <= unsigned(ioin.rddata);
+				--end loop;
+			---else
+				--for i in (stream-1) downto 0 loop
+				--	a_mux(i) <= log(i);
+				--end loop;
+			--end if;
+		--end if;
+	--else
+	--	for i in (stream-1) downto 0 loop	
+		--	a_mux(i) <= arith(i);
+		--end loop;
+	--end if;
 		
+        -- IMPORTANT
+        -- ld, add, lsh = 00
+        -- and, sub,rsh = 01
+        -- or, mult, lro = 10
+        -- xor, div, rro = 11
+
+        case din.dec.op is
+            when "00" =>
+                logic <= opd; -- load
+                arith <= accu + opd;
+                shift <= accu(14 downto 0) & '0'; -- left shift
+            when "01" =>
+                logic <= accu and opd;
+                arith <= accu - opd;
+                shift <= '0' & accu(15 downto 1); -- right shift
+            when "10" =>
+                logic <= accu or opd;
+                tmp := accu * opd;
+                arith <= tmp(15 downto 0);
+                shift <= accu(14 downto 0) & accu(15); -- left rotate
+            when "11" =>
+                logic <= accu xor opd;
+                tmp := accu * opd;
+                arith <= tmp(15 downto 0); -- WARNING! DIV instruction multiplies..
+                shift <= accu(0) & accu(15 downto 1); -- right rotate
+            when others =>
+                null;
+        end case;
+
+        case din.dec.op_class is
+            when logic_flag =>
+                a_mux <= logic;
+            when arith_flag =>
+                a_mux <= arith;
+            when shift_flag =>
+                a_mux <= shift;
+            when io_flag=> 
+                a_mux <= unsigned(ioin.rddata);
+            when others =>
+                a_mux <= (others => '0');
+        end case;
+        
 end process;
 
 -- a MUX between 'normal' data and the PC for jal

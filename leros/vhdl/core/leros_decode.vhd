@@ -51,12 +51,12 @@ begin
 process(instr)
 begin
 	-- some defaults
-	dec.op <= op_ld;
+	dec.op <= "00";
 	dec.al_ena <= '0';
 	dec.ah_ena <= '0';
-	dec.log_add <= '0';
-	dec.add_sub <= '0';
-	dec.shr <= '0';
+	--dec.log_add <= '0';
+	--dec.add_sub <= '0';
+	--dec.shr <= '0';
 	dec.sel_imm <= '0';
 	dec.store <= '0';
 	dec.outp <= '0';
@@ -68,7 +68,7 @@ begin
 	dec.indls<= '0';	
 	
 	-- start decoding
-	dec.add_sub <= instr(2);
+        dec.op <= instr(2 downto 1);
 	dec.sel_imm <= instr(0);
 	-- bit 1 and 2 partially unused
 	case instr(7 downto 3) is
@@ -76,16 +76,19 @@ begin
 		when "00001" =>		-- add, sub
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
-			dec.log_add <= '1';
+			--dec.log_add <= '1';
+                        dec.op_class <= arith_flag;
 		when "00010" =>		-- shr
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
-			dec.shr <= '1';
+			--dec.shr <= '1';
+                        dec.op_class <= shift_flag;
 		when "00011" =>		-- reserved
 			null;
 		when "00100" =>		-- alu
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
+                        dec.op_class <= logic_flag;
 		when "00101" =>		-- loadh
 			dec.loadh <= '1';
 			dec.ah_ena <= '1';
@@ -99,6 +102,7 @@ begin
 				dec.ah_ena <= '1';
 				dec.inp <= '1';
 			end if;
+                        dec.op_class <= io_flag;
 		when "01000" =>		-- jal
 			dec.jal <= '1';
 			dec.store <= '1';
@@ -117,18 +121,22 @@ begin
 			null;
 	end case;
 
-	case instr(2 downto 1) is
-		when "00" =>
-			dec.op <= op_ld;
-		when "01" =>
-			dec.op <= op_and;
-		when "10" =>
-			dec.op <= op_or;
-		when "11" =>
-			dec.op <= op_xor;
-		when others =>
-			null;
-	end case;
+-- 	case instr(2 downto 1) is
+-- 		when "00" =>
+-- 			--dec.op <= op_ld;
+--                         dec.op <= '00';
+-- 		when "01" =>
+-- 			--dec.op <= op_and;
+--                         dec.op <= '01';
+-- 		when "10" =>
+-- 			--dec.op <= op_or;
+--                         dec.op <= '10';
+-- 		when "11" =>
+-- 			--dec.op <= op_xor;
+--                         dec.op <= '11';
+-- 		when others =>
+-- 			null;
+-- 	end case;
 end process;
 
 end rtl;
