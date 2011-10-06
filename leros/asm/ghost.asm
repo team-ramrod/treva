@@ -36,7 +36,7 @@ read_image:
 # temp = width*height
     mult r2
 # size = temp
-    load r7
+    store r7
 
 
 # read in bytes
@@ -72,18 +72,16 @@ tits:
     store r6
     sub 2
     nop
-    brz ghost
+    brz ghost_init
     nop
 
 # goto read_image
     nop
-    load <read_image
-    loadh >read_image
-    nop
-    jal r1
+    branch read_image
     nop
 
 # i = 0;
+ghost_init:
     load 0
     loadh 0
     store r5
@@ -101,6 +99,7 @@ ghost:
     add r7          # address += size
     add r7          # address += size
     store r11
+    load r9
     store r11 +20   # store result into address
     load r5
     add 1
