@@ -17,18 +17,18 @@ end in_mux;
 architecture Behavioral of in_mux is
 
 begin
-	process(sel_imm, imm, rddata)
-	begin
-		if sel_imm='1' then
-			for i in 0 to (stream-1) loop
-				opd(i) <= unsigned(imm);
-			end loop;
-		else
-			-- a MUX for IO will be added
-			for i in 0 to (stream-1) loop
-				opd(i) <= unsigned(rddata(i));
-			end loop;
-		end if;
-	end process;
+process(sel_imm, imm, rddata)
+begin
+	if sel_imm='1' then
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(imm);
+		end loop;
+	else
+		-- a MUX for IO will be added
+		for i in (stream-1) downto 0 loop
+			opd(i) <= unsigned(rddata(i));
+		end loop;
+	end if;
+end process;
 end Behavioral;
 
