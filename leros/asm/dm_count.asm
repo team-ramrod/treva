@@ -32,7 +32,7 @@ ll2:
 
     load      r1    +8
     add       1
-    out       0
+    out       0     0
     store     r1    +8
 
     load      1

@@ -23,26 +23,29 @@ end accu;
 architecture Behavioral of accu is
 
 begin
-	process(clk, reset)
-	begin
-		if reset='1' then
-			for i in 0 to (stream-1) loop
-				accu(i) <= (others => '0');
+process(clk, reset)
+begin
+	if reset='1' then
+		accu <= (others => (others => '0'));
+--		dout.outp <= (others => '0');
+	elsif rising_edge(clk) then
+		if low_en = '1' then
+			for i in (stream-1) downto 0 loop
+				accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
 			end loop;
-		elsif rising_edge(clk) then
-			if low_en = '1' then
-				for i in 0 to (stream-1) loop
-					accu(i)(7 downto 0) <= a_mux(i)(7 downto 0);
-				end loop;
-			end if;
-			if high_en = '1' then
-				for i in 0 to (stream-1) loop
-					accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
-				end loop;
-			end if;
-			wraddr_dly <= dm_addr;
-			pc_dly <= pc;
 		end if;
-	end process;
+		if high_en = '1' then
+			for i in (stream-1) downto 0 loop
+				accu(i)(15 downto 8) <= a_mux(i)(15 downto 8);
+			end loop;
+		end if;
+		wraddr_dly <= dm_addr;
+		pc_dly <= pc;
+		-- a simple output port for the hello world example
+---             if din.dec.outp='1' then
+---                     dout.outp <= std_logic_vector(accu);
+---             end if;
+	end if;
+end process;
 end Behavioral;
 
