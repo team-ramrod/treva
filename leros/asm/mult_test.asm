@@ -33,8 +33,8 @@ ll2:
     mult    4
     out     0     1
     store   r1
-    sub     0xff
-    brp     loop
+    sub     0x100
+    brnz     loop
     load    1
     nop
     brnz    start
