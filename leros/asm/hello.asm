@@ -63,7 +63,7 @@ end:
 send:
 	in 0 3	# check tdre
 	and 1
-	nop	# one delay slot
+	nop	// one delay slot
 	brz send
   nop
 	load r0

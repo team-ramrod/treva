@@ -16,6 +16,7 @@ class Treva
         File.open(file, 'r') do |f|
             while line = f.gets
                 line.slice!(line.index('#')..-1) unless line.index('#').nil?
+                line.slice!(line.index("//")..-1) unless line.index("//").nil?
                 line.strip!
                 if line.index(':')
                     @labels[line[0..-2]] = @app.length
