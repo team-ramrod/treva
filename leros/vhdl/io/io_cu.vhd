@@ -25,6 +25,9 @@ architecture rtl of io_cu is
 	signal data : std_logic_vector(15 downto 0);
 	signal wr_dly : std_logic;
 	signal rotary_position : std_logic_vector(7 downto 0);
+	
+	signal input_select  : io_input_select_type;
+	signal output_select : io_output_select_type;
 
 begin
 
@@ -50,38 +53,75 @@ port map(
 	
 re : entity work.rotary_encoder port map(clk_int, pins_in.rotary_a, pins_in.rotary_b, rotary_position);
 
-with cpu_out.addr select
-	uart_addr <= '1' when "00000100",
-		     '0' when others;
+with cpu_out.addr(3 downto 0) select
+	input_select <= pbtn_select         when "0001",
+	                sbtn_select         when "0010",
+						 uart_control_select when "0011",
+						 uart_data_select    when "0100",
+						 rotary_select       when "0101",
+						 null_select         when others;
+						 
+with input_select select
+	uart_addr <= '0' when uart_control_select,
+					 '1' when others;
 
-process(clk_int)
+process(input_select, cpu_out.rd)
 begin
-	if rising_edge(clk_int) then
+	if input_select = uart_data_select and cpu_out.rd = '1' then
+		uart_rd <= '1';
+	else
 		uart_rd <= '0';
-		cpu_in.rddata <= (others => '0');
-		case cpu_out.addr(3 downto 0) is
-			when "0001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
-			when "0010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
-			when "0011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when "0100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when "0101" => cpu_in.rddata(7 downto 0) <= rotary_position;
-			when others => null;
-		end case;
 	end if;
 end process;
 
-process(clk_int)
+data_in_select : process(input_select)
+begin
+	cpu_in.rddata <= (others => '0');
+	case input_select is
+		when pbtn_select =>
+			cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
+		when sbtn_select =>
+			cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
+		when uart_control_select =>
+			cpu_in.rddata(7 downto 0) <= uart_data_in;
+		when uart_data_select =>
+			cpu_in.rddata(7 downto 0) <= uart_data_in;
+		when rotary_select =>
+			cpu_in.rddata(7 downto 0) <= rotary_position;
+		when null_select =>
+			null;
+	end case;
+end process;
+
+with cpu_out.addr(3 downto 0) select
+	output_select <= led_select       when "0001",
+	                 uart_data_select when "0100",
+						  null_select      when others;
+
+process(output_select, wr_dly)
+begin
+	if output_select = uart_data_select and wr_dly = '1' then
+		uart_wr <= '1';
+	else
+		uart_wr <= '0';
+	end if;
+end process;
+						  
+data_out_select : process(clk_int)
 begin
 	if rising_edge(clk_int) then
-		uart_wr <= '0';
 		if wr_dly = '1' then
-			case cpu_out.addr(3 downto 0) is
-				when "0001" => pins_out.leds <= data(7 downto 0);
-				when "0100" => uart_wr <= '1'; uart_data_out <= data(7 downto 0);
-				when others => null;
+			case output_select is
+				when led_select =>
+					pins_out.leds <= data(7 downto 0);
+				when uart_data_select =>
+					uart_data_out <= data(7 downto 0);
+				when null_select =>
+					null;
 			end case;
-			wr_dly <= '0';
 		end if;
+		
+		wr_dly <= '0';
 		if cpu_out.wr = '1' then
 			data <= cpu_out.wrdata;
 			wr_dly <= '1';

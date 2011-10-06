@@ -17,4 +17,7 @@ type io_pins_out_type is record
 	uart_tx : std_logic;
 end record;
 
+type io_input_select_type is (pbtn_select, sbtn_select, uart_data_select, uart_control_select, rotary_select, null_select);
+type io_output_select_type is (led_select, uart_data_select, null_select);
+
 end io_types;
