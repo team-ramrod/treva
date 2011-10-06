@@ -3,6 +3,7 @@
 start:
 
     in 0 1
+    nop
     out 0 1
 
     nop
