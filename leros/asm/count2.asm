@@ -30,6 +30,7 @@ ll2:
 
     in      0   2
     add     r1
+    add     1
     out     0   1
     store   r1
 
