@@ -91,6 +91,7 @@ end:
 send:
 	load r0
   nop
+  nop
 	out 0 4
 	out 0 1 // Also output on leds
 	load r1	// that's return
@@ -101,7 +102,7 @@ send:
 pause:
     load    128
     loadh     0
-    store   r0
+    store   r2
 
 ll1:
     load    255
@@ -113,9 +114,9 @@ ll2:
     brnz    ll2
     nop
 
-    load    r0
+    load    r2
     sub     1
-    store   r0
+    store   r2
 
     brnz    ll1
     nop
