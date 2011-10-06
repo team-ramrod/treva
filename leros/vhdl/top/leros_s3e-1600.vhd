@@ -62,21 +62,8 @@ begin
 		LOCKED_OUT => open
 	);
 
---	internal reset generation
---	should include the PLL lock signal
-
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
-		if (res_cnt/="111") then
-			res_cnt <= res_cnt+1;
-		end if;
-
-		int_res <= not res_cnt(0) or not res_cnt(1) or not res_cnt(2);
-	end if;
-end process;
-
 
 	cpu : entity work.leros port map(clk_int, int_res, ioout, ioin);
 	io  : entity work.io_cu port map(clk_int, int_res, pins_in, pins_out, ioout, ioin);
+	rg  : entity work.reset_generator port map(clk_int, int_res);
 end rtl;
