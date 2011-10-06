@@ -63,7 +63,7 @@ tits:
     load r4
     sub 1
     nop
-# if(temp != 0) goto tits; 
+# if(temp != 0) goto tits;
     brnz tits
 
 #if (++images_loaded == 2) goto ghost
@@ -98,8 +98,8 @@ ghost:
     shr             # Divide by 2
     store r9        # result = (im2 + im1)/2
     load r5         # address = i
-    add r7          # address += size 
-    add r7          # address += size 
+    add r7          # address += size
+    add r7          # address += size
     store r11
     store r11 +20   # store result into address
     load r5
@@ -111,10 +111,6 @@ ghost:
     nop
     brnz ghost      # if (++i == size) goto ghost
     nop
-
-
-
-
 
 
 # read in width
