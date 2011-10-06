@@ -5,15 +5,16 @@ class Uart
 
     def in thing_a, thing_b
         # I DON'T KNOW WHAT THESE ARE
-        case thing_b
+        case thing_b.to_i
         when 2
-            2
+            return 2
         when 3
-            @data_stack.pop
+            return @data_stack.pop
         end
     end
 
-    def out
+    def out accu, to
+        puts "IO out: %d" % accu
     end
 end
 

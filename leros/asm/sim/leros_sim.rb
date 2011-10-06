@@ -27,13 +27,22 @@ class Treva
     def step
         chunks = @app[@pc].split
         @pc += 1
-        send chunks[0].to_sym, chunks[1]
+        case chunks.size
+        when 1 #nop
+            send chunks[0].to_sym
+        when 2
+            send chunks[0].to_sym, chunks[1]
+        else
+            send chunks[0].to_sym, chunks[1..-1]
+        end
+
     end
 
     def run
-        25.times do |i|
+        50.times do |i|
             if @pc < @app.size
                 puts "%d: %s. Accu = %d" % [@pc, @app[@pc], @accu]
+                fail if @accu == nil
                 step
             end
         end
@@ -67,7 +76,6 @@ class Treva
     end
 
     def and arg
-        puts @accu
         @accu = @accu.to_i & (get_value arg).to_i
     end
 
@@ -76,7 +84,11 @@ class Treva
     end
 
     def loadh arg
-        @accu = @labels[arg[1..-1]]
+        if arg.index('>')
+            @accu = @labels[arg[1..-1]]
+        else
+            @accue = arg.to_i << 8
+        end
     end
 
     def jal arg
@@ -99,7 +111,7 @@ class Treva
     def out arg
     end
 
-    def nop arg
+    def nop
         #do nothing
     end
 end
