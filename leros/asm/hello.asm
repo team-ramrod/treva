@@ -68,6 +68,7 @@ send:
   nop
 	load r0
 	out 0 4
+	out 0 1 // Also output on leds
 	load r1	// that's return
 	nop
 	jal r1	// here r1 is just dummy
