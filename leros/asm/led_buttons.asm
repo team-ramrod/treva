@@ -5,7 +5,6 @@ start:
     in 0 1
     nop
     nop
-    nop
     out 0 1
 
     nop
