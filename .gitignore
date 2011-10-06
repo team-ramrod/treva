@@ -3,3 +3,7 @@
 
 /leros/vhdl/generated/leros_rom.vhd
 /leros/xilinx
+
+*.out
+*.log
+*.aux

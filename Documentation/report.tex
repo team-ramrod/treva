@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper,conference]{IEEEtran}
+\documentclass[10pt,a4paper,journal,compsoc]{IEEEtran}
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage[cmex10]{amsmath}
@@ -7,12 +7,6 @@
 \usepackage{fixltx2e}
 \usepackage{hyperref}
 \usepackage{listings}
-
-%\input{mystyle}
-
-\begin{document}
-  
-  \lstset{language=C}
 
   \input{frontmatter}
   \input{introduction}
@@ -24,10 +18,8 @@
 
   % Change to balance the columns on the last page
  % \IEEEtriggeratref{2}
-
   \bibliographystyle{IEEEtran}
   \bibliography{IEEEabrv,report}
- % \pagebreak
   \input{appendices}
 \end{document}
 
