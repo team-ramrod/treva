@@ -39,11 +39,16 @@ class Treva
     end
 
     def run
-        80.times do |i|
+        500.times do |i|
             if @pc < @app.size
-                puts "%d: %s. Accu = %d" % [@pc, @app[@pc], @accu]
+                puts "%d: %s" % [@pc, @app[@pc]]
                 step
-                fail if @accu == nil
+                @registers.each_with_index do |val, i|
+                    puts "register %d = %d" % [i, val] unless val == 0
+                end
+                puts "accu = %d" % @accu
+                puts
+                #fail if @accu == nil
             end
         end
     end
@@ -70,7 +75,11 @@ class Treva
     end
 
     def store arg
-        @registers[get_value arg] = @accu
+        if arg.kind_of?(Array)
+            @registers[get_value(arg[0]) + (arg[1][1..-1]).to_i] = @accu
+        else
+            @registers[get_address arg] = @accu
+        end
     end
 
     def add arg
@@ -98,8 +107,8 @@ class Treva
     end
 
     def jal arg
-        @registers[get_address arg] = @pc-1
-        @pc = @accu + 1
+        @registers[get_address arg] = @pc
+        @pc = @accu
     end
 
     def brnz arg
@@ -111,6 +120,7 @@ class Treva
     end
 
     def in args
+        temp =
         @accu = @io.in(args[0], args[1])
     end
 

@@ -36,7 +36,7 @@ read_image:
 # temp = width*height
     mult r2
 # size = temp
-    load r7
+    store r7
 
 
 # read in bytes
