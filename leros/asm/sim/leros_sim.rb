@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 $NUM_REGISTERS = 1000
 
 class Treva
