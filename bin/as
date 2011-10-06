@@ -245,6 +245,7 @@ __END__
 
 
 
+Sets PC to accumulator and stores next PC in rx
   JAL       rx  : 01000 00 0 x8
 
 

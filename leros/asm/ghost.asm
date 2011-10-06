@@ -112,16 +112,24 @@ ghost:
     nop
 
 
-
-# read in width
-# read in height
-
-# read in bytes
-
-# calculate
-
 # write out width
-# write out height
+   load r2
+   store r0
+   load <write
+   loadh >write
+   nop
+   jal r1
+   nop
+
+# write out height (assuming same as width)
+   load r2
+   store r0
+   load <write
+   loadh >write
+   nop
+   jal r1
+   nop
+
 
 # write out bytes
 
@@ -139,9 +147,22 @@ read:
   nop
 
   jal r1
+  nop
 
 
+# Contract for calling
+#    r0 is the data
+#    r1 is the return address
 write:
+  # Check tdre of uart
+  in 0 2
+  and 1         # 1 is the tdre, 2 rdrf
+  nop
+  brz write     # keep looping until tdre is high
+
+  load r0
+  out 0 3
+  load r1
   nop
   jal r1
   nop
