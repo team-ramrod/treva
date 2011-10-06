@@ -18,5 +18,6 @@ loop:
 	nop	// one delay slot
 	brz loop
 	load r0
+  nop
 	out 0 4
 	branch start

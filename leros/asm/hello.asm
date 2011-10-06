@@ -67,6 +67,7 @@ send:
 	brz send
   nop
 	load r0
+  nop
 	out 0 4
 	out 0 1 // Also output on leds
 	load r1	// that's return

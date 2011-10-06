@@ -31,6 +31,7 @@ ll2:	sub 1
 	nop
 
 	load 0
+  nop
 	out 0 0
 
 	load 0
@@ -49,6 +50,7 @@ ll4:	sub 1
 	nop
 
 	load 1
+  nop
 	out 0 0
 
 	load 1

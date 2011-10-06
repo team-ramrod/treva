@@ -17,7 +17,8 @@ start:
 	loadaddr r3
 	load (ar+1)
 	load r1
-	out 0
+  nop
+	out 0 0
 
 
 

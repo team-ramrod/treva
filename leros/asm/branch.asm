@@ -41,5 +41,5 @@ brpok:
 	branch start
 brok:
 	nop
-	out 0
+	out 0 0
 

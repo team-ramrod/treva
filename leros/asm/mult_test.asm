@@ -31,8 +31,8 @@ ll2:
 
     load    r1
     mult    4
-    out     0     1
     store   r1
+    out     0     1
     sub     0xff
     brp     start
     branch   loop

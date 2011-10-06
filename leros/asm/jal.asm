@@ -26,5 +26,6 @@ function:
 	jal r3
 end:
 	load 76
-	out 0
+  nop
+	out 0 0
 
