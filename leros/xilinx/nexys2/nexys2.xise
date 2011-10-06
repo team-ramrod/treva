@@ -39,7 +39,7 @@
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
-    <file xil_pn:name="../../vhdl/generated/leros_rom.vhd" xil_pn:type="FILE_VHDL">
+    <file xil_pn:name="../../vhdl/core/leros_rom.vhd" xil_pn:type="FILE_VHDL">
       <association xil_pn:name="BehavioralSimulation"/>
       <association xil_pn:name="Implementation"/>
     </file>
