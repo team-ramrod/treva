@@ -20,23 +20,28 @@ architecture Behavioral of dm is
 	-- the data ram
 	constant nwords : integer := 2 ** DM_BITS;
 	type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
-	type ram_array_type is array (0 to stream-1) of ram_type;
-		
-	signal dm : ram_array_type := (others => (others =>(others =>'0')));
+	type ram_array_type is array(0 to stream-1) of ram_type;
+
+	-- 0 initialization is for simulation only
+	-- Xilinx and Altera FPGA initialize memory blocks to 0
+	signal dm : ram_array_type := (others => (others => (others => '0')));
 	
 begin
-	process (clk)
-	begin
-		if rising_edge(clk) then
-			if store='1' then
-				for i in 0 to (stream-1) loop
-					dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
-				end loop;
-			end if;
-			for i in 0 to (stream-1) loop
-				rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
-			end loop;
+process (clk)
+begin
+	if rising_edge(clk) then
+		-- is store overloaded?
+		-- now we have only 'register' read and write
+		if store='1' then
+		for i in (stream-1) downto 0 loop
+			dm(i)(to_integer(unsigned(wraddr))) <= wrdata(i);
+		end loop;
 		end if;
-	end process;
+		for i in (stream-1) downto 0 loop
+			rddata(i) <= dm(i)(to_integer(unsigned(rdaddr)));
+		end loop;
+		
+	end if;
+end process;
 end Behavioral;
 

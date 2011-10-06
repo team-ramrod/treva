@@ -18,16 +18,18 @@ architecture Behavioral of out_mux is
 
 begin
 	-- a MUX between 'normal' data and the PC for jal
-	process(jal, accu, pc_dly)
-	begin
-		for i in 0 to (stream-1) loop
-			if jal='1' then
-				wrdata(i)(IM_BITS-1 downto 0) <= pc_dly;
-				wrdata(i)(15 downto IM_BITS) <= (others => '0');
-			else
-				wrdata(i) <= std_logic_vector(accu(i));
-			end if;
+process(jal, accu, pc_dly)
+begin
+	if jal='1' then
+		for i in (stream-1) downto 0 loop
+			wrdata(i)(IM_BITS-1 downto 0) <= pc_dly;
+			wrdata(i)(15 downto IM_BITS) <= (others => '0');
 		end loop;
-	end process;	
+	else
+		for i in (stream-1) downto 0 loop
+			wrdata(i) <= std_logic_vector(accu(i));
+			end loop;
+	end if;
+end process;		
 end Behavioral;
 
