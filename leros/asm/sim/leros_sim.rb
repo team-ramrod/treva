@@ -39,7 +39,7 @@ class Treva
     end
 
     def run
-        500.times do |i|
+        5000.times do |i|
             if @pc < @app.size
                 puts "%d: %s" % [@pc, @app[@pc]]
                 step
@@ -117,6 +117,10 @@ class Treva
 
     def brz arg
         @pc = @labels[arg] unless @accu != 0
+    end
+
+    def branch arg
+        @pc = @labels[arg]
     end
 
     def in args
