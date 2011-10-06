@@ -51,20 +51,21 @@ with cpu_out.addr select
 	uart_addr <= '1' when "00000100",
 		     '0' when others;
 
-process(clk_int)
-begin
-	if rising_edge(clk_int) then
-		uart_rd <= '0';
-		cpu_in.rddata <= (others => '0');
-		case cpu_out.addr(3 downto 0) is
-			when "0001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
-			when "0010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
-			when "0011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when "0100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when others => null;
-		end case;
-	end if;
-end process;
+--process(clk_int)
+--begin
+--	if rising_edge(clk_int) then
+--		uart_rd <= '0';
+--		cpu_in.rddata <= (others => '0');
+--		case cpu_out.addr(3 downto 0) is
+--			when "0001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
+--			when "0010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
+--			when "0011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
+--			when "0100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
+--			when others => null;
+--		end case;
+--	end if;
+--end process;
+cpu_in.rddata <= "000000001010" & pins_in.sbtn;
 
 process(clk_int)
 begin

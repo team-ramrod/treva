@@ -53,6 +53,8 @@ begin
 	-- some defaults
 	--dec.op <= op_ld;
 	dec.op <= "00";
+	dec.op_class <= io_flag;
+	dec.rw <= '0';
 	dec.al_ena <= '0';
 	dec.ah_ena <= '0';
 	dec.log_add <= '0';
@@ -84,6 +86,7 @@ begin
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 			dec.shr <= '1';
+			dec.op_class <= shift_flag;
 		when "00011" =>		-- reserved
 			null;
 		when "00100" =>		-- alu
@@ -93,15 +96,19 @@ begin
 		when "00101" =>		-- loadh
 			dec.loadh <= '1';
 			dec.ah_ena <= '1';
+			dec.op_class <= logic_flag;
 		when "00110" =>		-- store
 			dec.store <= '1';
 		when "00111" =>		-- I/O
+			dec.op_class <= io_flag;
 			if instr(2)='0' then
 				dec.outp <= '1';
+				dec.rw <= '0'; -- write
 			else
 				dec.al_ena <= '1';
 				dec.ah_ena <= '1';
 				dec.inp <= '1';
+				dec.rw <= '1'; -- read
 			end if;
 		when "01000" =>		-- jal
 			dec.jal <= '1';
@@ -114,6 +121,7 @@ begin
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 			dec.indls <= '1';
+			--dec.op_class <= logic_flag;
 		when "01110" =>		-- store indirect
 			dec.indls <= '1';
 			dec.store <= '1';

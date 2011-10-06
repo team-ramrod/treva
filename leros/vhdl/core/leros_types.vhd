@@ -38,14 +38,14 @@ package leros_types is
 	-- should this later go to a leros_config package?
 	constant DM_BITS : integer := 8;
 	constant IM_BITS : integer := 9;
-	constant stream : integer := 3;
+	constant stream : integer := 1;
 
 	type stream_std is array(0 to stream-1) of std_logic_vector(15 downto 0);
 	type stream_unsigned is array(0 to stream-1) of unsigned(15 downto 0);
 	
 	--type alu_log_type is (op_and, op_or, op_xor, op_ld);
 	
-	type op_class_type is (arith_flag, logic_flag, shift_type, io_flag);
+	type op_class_type is (arith_flag, logic_flag, shift_flag, io_flag);
 	
 	type decode_type is record
 		--op : alu_log_type;
@@ -55,6 +55,7 @@ package leros_types is
 		op_class : op_class_type;
 		log_add : std_logic;
 		add_sub : std_logic; -- pretend this is op_class
+		rw : std_logic; -- Read (1) or write(0) for IO.
 		shr : std_logic;
 		sel_imm : std_logic;
 		store : std_logic;

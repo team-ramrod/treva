@@ -67,7 +67,6 @@ architecture rtl of leros_ex is
 
 	-- the accu
 	signal accu, opd  : stream_unsigned;
-	--signal log, arith, a_mux : stream_unsigned;
 	signal logic, arith, shift, a_mux : stream_unsigned;
 	
 	signal wrdata, rddata : stream_std;
@@ -94,28 +93,24 @@ begin
 	-- Benjamin's
 	case din.dec.op is
 		when "00" =>
-		--when op_ld =>
 			for i in (stream-1) downto 0 loop
 				logic(i) <= opd(i);
 				arith(i) <= accu(i) + opd(i);
 				shift(i) <= accu(i) + opd(i); -- NB shift NYI
 			end loop;	
 		when "01" =>
-		--when op_and =>
 			for i in (stream-1) downto 0 loop
 				logic(i) <= accu(i) and opd(i);
 				arith(i) <= accu(i) - opd(i);
 				shift(i) <= accu(i) + opd(i); -- NB shift NYI
 			end loop;	
 		when "10" =>
-		--when op_or =>
 			for i in (stream-1) downto 0 loop
 				logic(i) <= accu(i) or opd(i);
 				arith(i) <= accu(i) * opd(i);
 				shift(i) <= accu(i) + opd(i); -- NB shift NYI
 			end loop;	
 		when "11" =>
-		--when op_xor =>
 			for i in (stream-1) downto 0 loop
 				logic(i) <= accu(i) xor opd(i);
 				arith(i) <= accu(i) * opd(i); -- NB div NYI
@@ -123,73 +118,41 @@ begin
 			end loop;	
 
 		when others =>
-			null;
+			for i in (stream-1) downto 0 loop
+				logic(i) <= (others => '0');
+				arith(i) <= (others => '0');
+				shift(i) <= (others => '0');
+			end loop;	
 	end case;
 	
 	case din.dec.op_class is
 		when arith_flag =>
 			for i in (stream-1) downto 0 loop
-				a_mux(i) <= arith(i);
+				a_mux(i) <= arith(i);	
 			end loop;	
-		when others =>
-			null;
-	end case;		
-			--
-
---	-- Zac's
-	if din.dec.add_sub='0' then
-		for i in (stream-1) downto 0 loop
-			arith(i) <= accu(i) + opd(i);
-		end loop;
-	else
-		for i in (stream-1) downto 0 loop
-			arith(i) <= accu(i) - opd(i);
-		end loop;
-	end if;
-
---	case din.dec.op is
---		when op_ld =>
---			for i in (stream-1) downto 0 loop
---				logic(i) <= opd(i);
---			end loop;
---		when op_and =>
---			for i in (stream-1) downto 0 loop
---				logic(i) <= accu(i) and opd(i);
---			end loop;
---		when op_or =>
---			for i in (stream-1) downto 0 loop
---				logic(i) <= accu(i) or opd(i);
---			end loop;
---		when op_xor =>
---			for i in (stream-1) downto 0 loop
---				logic(i) <= accu(i) xor opd(i);
---			end loop;
---		when others =>
---			null;
---	end case;
-	
-	if din.dec.log_add='0' then
-		if din.dec.shr='1' then
+		when logic_flag =>
 			for i in (stream-1) downto 0 loop
-				a_mux(i) <= '0' & accu(i)(15 downto 1);
-			end loop;
-		else
-			if din.dec.inp='1' then
+				a_mux(i) <= logic(i);	
+				--a_mux(i) <= unsigned(ioin.rddata);
+			end loop;	
+		when io_flag =>
+				
+			if din.dec.rw='1' then -- read
 				for i in (stream-1) downto 0 loop
 					a_mux(i) <= unsigned(ioin.rddata);
-				end loop;
+				end loop;	
 			else
 				for i in (stream-1) downto 0 loop
 					a_mux(i) <= logic(i);
 				end loop;
 			end if;
-		end if;
-	else
-		--for i in (stream-1) downto 0 loop	
-			--a_mux(i) <= arith(i);
-		--end loop;
-	end if;
 		
+		when others =>
+			for i in (stream-1) downto 0 loop
+				a_mux(i) <= (others => '0');
+			end loop;
+	end case;
+
 end process;
 
 -- a MUX between 'normal' data and the PC for jal
