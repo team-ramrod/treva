@@ -56,13 +56,14 @@ begin
 	if rising_edge(clk_int) then
 		uart_rd <= '0';
 		cpu_in.rddata <= (others => '0');
-		case cpu_out.addr is
-			when "00000001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
-			when "00000010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
-			when "00000011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when "00000100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
-			when others => null;
-		end case;
+		cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
+--		case cpu_out.addr is
+--			when "00000001" => cpu_in.rddata(3 downto 0) <= pins_in.pbtn;
+--			when "00000010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
+--			when "00000011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
+--			when "00000100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
+--			when others => null;
+--		end case;
 	end if;
 end process;
 
