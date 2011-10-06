@@ -1,10 +1,10 @@
-//
-// A small hello world
-//
-// write Leros to the UART
-//
+#
+# A small hello world
+#
+# write Leros to the UART
+#
 
-	nop	// first instruction is not executed
+	nop	# first instruction is not executed
 
 
 start:
@@ -61,15 +61,15 @@ end:
 	branch start
 
 send:
-	in 0 3	// check tdre
+	in 0 3	# check tdre
 	and 1
 	nop	// one delay slot
 	brz send
   nop
 	load r0
 	out 0 4
-	out 0 1 // Also output on leds
-	load r1	// that's return
+	out 0 1 # Also output on leds
+	load r1	# that's return
 	nop
-	jal r1	// here r1 is just dummy
+	jal r1	# here r1 is just dummy
   nop

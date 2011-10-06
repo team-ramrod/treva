@@ -1,5 +1,13 @@
 #!/usr/bin/env ruby
+require 'readline'
 $NUM_REGISTERS = 1000
+
+$print_steps = false
+
+if ARGV.length > 0
+    $print_steps = true
+end
+
 
 class Treva
     attr_accessor :pc, :registers
@@ -11,9 +19,11 @@ class Treva
         @pc = 0
         @app = Array.new
         @labels = Hash.new
+        @breakpoints = Array.new
         File.open(file, 'r') do |f|
             while line = f.gets
                 line.slice!(line.index('#')..-1) unless line.index('#').nil?
+                line.slice!(line.index("//")..-1) unless line.index("//").nil?
                 line.strip!
                 if line.index(':')
                     @labels[line[0..-2]] = @app.length
@@ -22,9 +32,14 @@ class Treva
                 end unless line.empty?
             end
         end
+        @LENGTH = @app.size
     end
 
-    def step
+    def step args
+        if @pc >= @LENGTH
+            puts "program end"
+            return 
+        end
         chunks = @app[@pc].split
         @pc += 1
         case chunks.size
@@ -38,16 +53,95 @@ class Treva
 
     end
 
+    def help bad_command
+        puts "unknown command" if bad_command == true
+        puts "commands are:
+        (h)elp
+        (p)rint_source
+        (s)tep
+        (b)reakpoint lineno
+        (c)ontinue
+        (i)nspect register
+        (d)ump up_to
+        (a)ccumulator_print
+        (q)uit"
+    end
+
+    def print_source args
+        @app.each_with_index do |val, i|
+            puts "%d: %s" %[i,val]
+        end
+    end
+
+    def toggle_breakpoint lineno
+        lineno = lineno[0].to_i
+        index = @breakpoints.index lineno
+        if index == nil 
+            @breakpoints.push lineno
+        else
+            @breakpoints.delete_at index
+        end
+    end
+
+    def continue args
+        begin
+            step nil
+        end while !(@breakpoints.include? @pc or @pc >= @LENGTH)
+    end
+
+    def inspect register
+        puts @registers[register[0].to_i]
+    end
+
+    def accumulator args
+        puts @accu
+    end
+
+    def dump range
+        max_reg = range[0].to_i
+        @registers[0..max_reg].each_with_index do |val, i|
+            puts "reg %d = %d" % [i,val]
+        end
+        puts "accumulator = %d" % @accu
+    end
+
     def run
+        last = ["help", 0]
+        dict = Hash.new
+        dict['a'] = :accumulator
+        dict['s'] = :step
+        dict['h'] = :help
+        dict['b'] = :toggle_breakpoint
+        dict['c'] = :continue
+        dict['i'] = :inspect
+        dict['d'] = :dump
+        dict['p'] = :print_source
+        while line = Readline.readline('> ', true)
+            tokens = line.split
+            tokens = last if tokens.empty?
+            command = tokens[0][0].chr
+            break if command == 'q'
+            if dict.has_key? command
+                send(dict[command], tokens[1..-1])
+            else
+                help true
+            end
+            last = tokens
+        end
+    end
+
+    def run_old
         5000.times do |i|
             if @pc < @app.size
-                puts "%d: %s" % [@pc, @app[@pc]]
+                puts "%d: %s" % [@pc, @app[@pc]] if $print_steps
                 step
-                @registers.each_with_index do |val, i|
-                    puts "register %d = %d" % [i, val] unless val == 0
+                if $print_steps
+                    @registers.each_with_index do |val, i|
+                        puts "register %d = %d" % [i, val] unless val == 0
+                    end
+                    puts "accu = %d" % @accu
+                    puts
                 end
-                puts "accu = %d" % @accu
-                puts
                 #fail if @accu == nil
             end
         end
@@ -69,8 +163,14 @@ class Treva
     end
 
     def load arg
-        if arg.index('<').nil?
-            @accu = get_value arg
+        if arg.kind_of?(Array)
+            @accu = @registers[get_value(arg[0]) + (arg[1][1..-1]).to_i]
+        else
+            if arg.index('<').nil?
+                @accu = get_value arg
+            else
+                @accu = @labels[arg[1..-1]]
+            end
         end
     end
 
@@ -88,6 +188,10 @@ class Treva
 
     def sub arg
         @accu -= get_value arg
+    end
+
+    def shr
+        @accu /= 2
     end
 
     def and arg
@@ -125,10 +229,11 @@ class Treva
 
     def in args
         temp =
-        @accu = @io.in(args[0], args[1])
+            @accu = @io.in(args[0], args[1])
     end
 
     def out arg
+        @io.out @accu, arg[0], arg[1]
     end
 
     def nop

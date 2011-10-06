@@ -8,7 +8,7 @@ class Uart
         # I DON'T KNOW WHAT THESE ARE
         case thing_b.to_i
         when 2
-            return 2
+            return 3
         when 3
             return @data_stack.pop
         else
@@ -16,8 +16,8 @@ class Uart
         end
     end
 
-    def out accu, to
-        puts "IO out: %d" % accu
+    def out accu, alu, to
+        puts "IO out: %d " % accu
     end
 end
 
