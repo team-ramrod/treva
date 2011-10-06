@@ -205,12 +205,12 @@ __END__
 
 
   ADD       rx  : 00001 00 0 x8
-  SUB       rx  : 00001 10 0 x8
+  SUB       rx  : 00001 01 0 x8
   MULT      rx  : 00001 10 0 x8
   DIV       rx  : 00001 11 0 x8
 
   ADD       im  : 00001 00 1 m8
-  SUB       im  : 00001 10 1 m8
+  SUB       im  : 00001 01 1 m8
   MULT      im  : 00001 10 1 x8
   DIV       im  : 00001 11 1 x8
 

@@ -33,7 +33,7 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*)
 all: $(addprefix $(BUILD_DIR)/,$(TESTBENCHES))
 
 test:
-	@make -ks clean $(addprefix test-,$(TESTBENCHES)) clean
+	@$(MAKE) -ks clean $(addprefix test-,$(TESTBENCHES)) clean
 
 list:
 	@echo $(addsuffix $(shell printf '\n'),$(TESTBENCHES))
