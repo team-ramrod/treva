@@ -33,6 +33,4 @@ ll2:
     out     0   1
     store   r1
 
-    load 1
-    nop
-    brnz    loop
+    branch  loop
