@@ -120,7 +120,7 @@ end
 
 
 if !(1..2).include?(ARGV.length) || !File.exist?(ARGV[0])
-  puts "Usage: ruby #{$0} <input_file> [<output_file>]"
+  $stderr.puts "Usage: ruby #{$0} <input_file> [<output_file>]"
   exit 1
 end
 
@@ -211,8 +211,8 @@ __END__
 
   ADD       im  : 00001 00 1 m8
   SUB       im  : 00001 01 1 m8
-  MULT      im  : 00001 10 1 x8
-  DIV       im  : 00001 11 1 x8
+  MULT      im  : 00001 10 1 m8
+  DIV       im  : 00001 11 1 m8
 
 
 
