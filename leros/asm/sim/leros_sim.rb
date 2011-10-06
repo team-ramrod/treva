@@ -106,6 +106,7 @@ class Treva
     end
 
     def run
+        last = ["help", 0]
         dict = Hash.new
         dict['a'] = :accumulator
         dict['s'] = :step
@@ -117,6 +118,7 @@ class Treva
         dict['p'] = :print_source
         while line = Readline.readline('> ', true)
             tokens = line.split
+            tokens = last if tokens.empty?
             command = tokens[0][0].chr
             break if command == 'q'
             if dict.has_key? command
@@ -124,6 +126,7 @@ class Treva
             else
                 help true
             end
+            last = tokens
         end
     end
 
