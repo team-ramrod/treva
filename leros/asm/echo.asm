@@ -6,17 +6,17 @@
 
 
 start:
-	in 0	// check rdrf
+	in 3	// check rdrf
 	and 2
 	nop	// one delay slot
 	brz start
-	in 1	// read received character
+	in 4	// read received character
 	store r0
 loop:
-	in 0	// check tdre
+	in 3	// check tdre
 	and 1
 	nop	// one delay slot
 	brz loop
 	load r0
-	out 1
+	out 4
 	branch start
