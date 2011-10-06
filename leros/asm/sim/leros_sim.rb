@@ -1,5 +1,7 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 $NUM_REGISTERS = 1000
+
+$PRINT_STEPS = false
 
 class Treva
     attr_accessor :pc, :registers
@@ -14,6 +16,7 @@ class Treva
         File.open(file, 'r') do |f|
             while line = f.gets
                 line.slice!(line.index('#')..-1) unless line.index('#').nil?
+                line.slice!(line.index("//")..-1) unless line.index("//").nil?
                 line.strip!
                 if line.index(':')
                     @labels[line[0..-2]] = @app.length
@@ -41,13 +44,15 @@ class Treva
     def run
         5000.times do |i|
             if @pc < @app.size
-                puts "%d: %s" % [@pc, @app[@pc]]
+                puts "%d: %s" % [@pc, @app[@pc]] if $PRINT_STEPS
                 step
-                @registers.each_with_index do |val, i|
-                    puts "register %d = %d" % [i, val] unless val == 0
+                if $PRINT_STEPS
+                    @registers.each_with_index do |val, i|
+                        puts "register %d = %d" % [i, val] unless val == 0
+                    end
+                    puts "accu = %d" % @accu
+                    puts
                 end
-                puts "accu = %d" % @accu
-                puts
                 #fail if @accu == nil
             end
         end
@@ -69,8 +74,14 @@ class Treva
     end
 
     def load arg
-        if arg.index('<').nil?
-            @accu = get_value arg
+        if arg.kind_of?(Array)
+            @accu = @registers[get_value(arg[0]) + (arg[1][1..-1]).to_i]
+        else
+            if arg.index('<').nil?
+                @accu = get_value arg
+            else
+                @accu = @labels[arg[1..-1]]
+            end
         end
     end
 
@@ -88,6 +99,10 @@ class Treva
 
     def sub arg
         @accu -= get_value arg
+    end
+
+    def shr
+        @accu /= 2
     end
 
     def and arg
@@ -125,10 +140,11 @@ class Treva
 
     def in args
         temp =
-        @accu = @io.in(args[0], args[1])
+            @accu = @io.in(args[0], args[1])
     end
 
     def out arg
+        @io.out arg[0], arg[1]
     end
 
     def nop
