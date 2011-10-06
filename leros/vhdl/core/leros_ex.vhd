@@ -93,15 +93,15 @@ begin
 	wraddr <= wraddr_dly;
 	
 	
---process(din, rddata)
-process(din, ioin.rddata)
+process(din, rddata)
+--process(din, ioin.rddata)
 begin
 	if din.dec.sel_imm='1' then
 		opd <= unsigned(din.imm);
 	else
 		-- a MUX for IO will be added
-		--opd <= unsigned(rddata);
-                opd <= unsigned(ioin.rddata);
+		opd <= unsigned(rddata);
+                --opd <= unsigned(ioin.rddata);
 	end if;
 end process;
 
