@@ -4,10 +4,13 @@ start:
 
     in 0 1
     nop
+    nop
     out 0 1
 
     nop
-    branch start
+    load 1
+    nop
+    brnz start
 
 #    load 0
 #    loadh 0
