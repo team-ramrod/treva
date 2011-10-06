@@ -68,6 +68,7 @@ class Treva
 
     def jal arg
        @return_point = @pc
+       @pc = @accu
     end
 
     def brnz arg
