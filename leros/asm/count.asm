@@ -33,4 +33,5 @@ ll2:
     store   r1
     out     0   1
 
+    nop
     branch  loop
