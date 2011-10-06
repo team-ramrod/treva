@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 $NUM_REGISTERS = 1000
 
-$PRINT_STEPS = false
+$print_steps = false
+
+if ARGV.length > 0
+    $print_steps = true
+end
+
 
 class Treva
     attr_accessor :pc, :registers
@@ -44,9 +49,9 @@ class Treva
     def run
         5000.times do |i|
             if @pc < @app.size
-                puts "%d: %s" % [@pc, @app[@pc]] if $PRINT_STEPS
+                puts "%d: %s" % [@pc, @app[@pc]] if $print_steps
                 step
-                if $PRINT_STEPS
+                if $print_steps
                     @registers.each_with_index do |val, i|
                         puts "register %d = %d" % [i, val] unless val == 0
                     end
@@ -144,7 +149,7 @@ class Treva
     end
 
     def out arg
-        @io.out arg[0], arg[1]
+        @io.out @accu, arg[0], arg[1]
     end
 
     def nop
