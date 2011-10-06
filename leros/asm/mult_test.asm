@@ -29,12 +29,12 @@ ll2:
     brnz    ll1
     nop
 
-  load    r1
-  mult    2
-  out     0     1
-  store   r1
-  sub     0xff
-  brp     start
-  branch   loop
+    load    r1
+    mult    4
+    out     0     1
+    store   r1
+    sub     0xff
+    brp     start
+    branch   loop
 
 
