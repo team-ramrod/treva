@@ -10,6 +10,8 @@ class Uart
             return 2
         when 3
             return @data_stack.pop
+        else
+            fail
         end
     end
 
@@ -23,6 +25,7 @@ t = Treva.new("../ghost.asm", u)
 
 u.data_stack = [3,3,   1,2,3,4,5,6,7,8,9,
                 3,3,   9,10,11,12,13,14,15,16,17]
+u.data_stack.reverse!
 
 
 t.run
