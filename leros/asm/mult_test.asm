@@ -34,7 +34,7 @@ ll2:
     out     0     1
     store   r1
     sub     0xff
-    brp     start
+    brp     loop
     load    1
     nop
-    brnz    loop
+    brnz    start
