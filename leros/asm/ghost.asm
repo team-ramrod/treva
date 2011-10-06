@@ -113,6 +113,7 @@ ghost:
     nop
 
 
+
 # read in width
 # read in height
 
@@ -139,3 +140,9 @@ read:
   nop
 
   jal r1
+
+
+write:
+  nop
+  jal r1
+  nop
