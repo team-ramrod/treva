@@ -30,8 +30,8 @@ ll2:
     nop
 
     load    r1
-    out     0     1
     mult    3
+    out     0     1
     store   r1
     sub     258
     brnz     loop
