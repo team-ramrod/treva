@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 $NUM_REGISTERS = 1000
 
-$PRINT_STEPS = true
+$PRINT_STEPS = false
 
 class Treva
     attr_accessor :pc, :registers
@@ -143,6 +143,7 @@ class Treva
     end
 
     def out arg
+        @io.out arg[0], arg[1]
     end
 
     def nop
