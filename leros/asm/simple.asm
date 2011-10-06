@@ -14,5 +14,7 @@ start:
   nop
   out   0 1
 
-  branch start
+  load 1
+  nop
+  brnz start
 
