@@ -73,7 +73,7 @@ begin
 		if wr_dly = '1' then
 			case cpu_out.addr is
 				when "00000001" => pins_out.leds <= data(7 downto 0);
-				when "00000010" => uart_wr <= '1'; uart_data_out <= data(7 downto 0);
+				when "00000100" => uart_wr <= '1'; uart_data_out <= data(7 downto 0);
 				when others => null;
 			end case;
 			wr_dly <= '0';
