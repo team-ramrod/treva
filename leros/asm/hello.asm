@@ -54,12 +54,12 @@ end:
 	branch start
 
 send:
-	in 3	// check tdre
+	in 0 3	// check tdre
 	and 1
 	nop	// one delay slot
 	brz send
 	load r0
-	out 4
+	out 0 4
 	load r1	// that's return
 	nop
 	jal r1	// here r1 is just dummy

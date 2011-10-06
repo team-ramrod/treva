@@ -132,12 +132,12 @@ ghost:
 # Reads byte from uart then places it into r0 and jumps to r1
 read:
   # Check rdrf
-  in 2 # uart control
+  in 0 2 # uart control
   and 2
   nop
   brz read
 
-  in 3 # uart data
+  in 0 3 # uart data
   store r0
   load r1
   nop

@@ -28,13 +28,7 @@ class Operand
     when 'a', 'r', 'v'
       return nil if type != @type
       { @id => Integer(num.join('')) }
-    when 'm'
-      begin
-        { 'm' => twos_complement(Integer(op)) }
-      rescue ArgumentError
-        nil
-      end
-    when '+'
+    when 'i', '+'
       begin
         { @id => twos_complement(Integer(op)) }
       rescue ArgumentError
@@ -215,10 +209,10 @@ __END__
   MULT      rx  : 00001 10 0 x8
   DIV       rx  : 00001 11 0 x8
 
-  ADD       m   : 00001 00 1 m8
-  SUB       m   : 00001 10 1 m8
-  MULT      m   : 00001 10 1 x8
-  DIV       m   : 00001 11 1 x8
+  ADD       im  : 00001 00 1 m8
+  SUB       im  : 00001 10 1 m8
+  MULT      im  : 00001 10 1 x8
+  DIV       im  : 00001 11 1 x8
 
 
 
@@ -226,9 +220,9 @@ __END__
   OR        rx  : 00100 10 0 x8
   XOR       rx  : 00100 11 0 x8
 
-  AND       m   : 00100 01 1 m8
-  OR        m   : 00100 10 1 m8
-  XOR       m   : 00100 11 1 m8
+  AND       im  : 00100 01 1 m8
+  OR        im  : 00100 10 1 m8
+  XOR       im  : 00100 11 1 m8
 
 
 
@@ -243,8 +237,8 @@ __END__
   LOADH     rx  : 00101 00 0 x8
   STORE     rx  : 00110 00 0 x8
 
-  LOAD      m   : 00100 00 1 m8
-  LOADH     m   : 00101 00 1 m8
+  LOAD      im  : 00100 00 1 m8
+  LOADH     im  : 00101 00 1 m8
 
   LOAD      rx +m : 01010 00 0 x8    01100 00 0 m8
   STORE     rx +m : 01010 00 0 x8    01110 00 0 m8
@@ -255,16 +249,17 @@ __END__
 
 
 
-  OUT       m   : 00111 00 0 m8
-  IN        m   : 00111 10 0 m8
+First immediate is the alu, second is the peripheral address
+  OUT       im  in : 00111 00 0 m4 n4
+  IN        im  in : 00111 10 0 m4 n4
 
 
 
-  BRANCH    m   : 01001 00 0 m8
-  BRZ       m   : 01001 00 1 m8
-  BRNZ      m   : 01001 01 0 m8
-  BRP       m   : 01001 01 1 m8
-  BRN       m   : 01001 10 0 m8
+  BRANCH    im  : 01001 00 0 m8
+  BRZ       im  : 01001 00 1 m8
+  BRNZ      im  : 01001 01 0 m8
+  BRP       im  : 01001 01 1 m8
+  BRN       im  : 01001 10 0 m8
 
 
 
@@ -273,8 +268,8 @@ __END__
   VMULT     vx  : 10001 10 0 x8
   VDIV      vx  : 10001 10 0 x8
 
-  VADD      m   : 10001 00 1 m8
-  VSUB      m   : 10001 01 1 m8
+  VADD      im  : 10001 00 1 m8
+  VSUB      im  : 10001 01 1 m8
   VMULT     vx  : 10001 10 1 x8
   VDIV      vx  : 10001 10 1 x8
 
@@ -291,6 +286,6 @@ __END__
   VROL          : 10010 10 0 00000000
   VROR          : 10010 11 0 00000000
 
-  VAND      m   : 10100 01 1 m8
-  VOR       m   : 10100 10 1 m8
-  VXOR      m   : 10100 11 1 m8
+  VAND      im  : 10100 01 1 m8
+  VOR       im  : 10100 10 1 m8
+  VXOR      im  : 10100 11 1 m8
