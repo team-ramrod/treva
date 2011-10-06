@@ -12,7 +12,9 @@ port (
 	pbtn	: in std_logic_vector(3 downto 0);
 	sbtn	: in std_logic_vector(3 downto 0);
 	rs232_dce_rxd : in  std_logic;
-	rs232_dce_txd : out std_logic
+	rs232_dce_txd : out std_logic;
+	rotary_a : in std_logic;
+	rotary_b : in std_logic
 );
 end leros_s3e_1600;
 
@@ -37,6 +39,8 @@ begin
 	pins_in.sbtn <= sbtn;
 	pins_in.pbtn <= pbtn;
 	pins_in.uart_rx <= rs232_dce_rxd;
+	pins_in.rotary_a <= rotary_a;
+	pins_in.rotary_b <= rotary_b;
 
 	leds <= pins_out.leds;
 	rs232_dce_txd <= pins_out.uart_tx;

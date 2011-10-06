@@ -24,6 +24,7 @@ architecture rtl of io_cu is
 	signal uart_data_out : std_logic_vector(7 downto 0);
 	signal data : std_logic_vector(15 downto 0);
 	signal wr_dly : std_logic;
+	signal rotary_position : std_logic_vector(7 downto 0);
 
 begin
 
@@ -46,6 +47,8 @@ port map(
 		txd	 => pins_out.uart_tx,
 		rxd	 => pins_in.uart_rx
 	);
+	
+re : entity work.rotary_encoder port map(clk_int, pins_in.rotary_a, pins_in.rotary_b, rotary_position);
 
 with cpu_out.addr select
 	uart_addr <= '1' when "00000100",
@@ -61,6 +64,7 @@ begin
 			when "0010" => cpu_in.rddata(3 downto 0) <= pins_in.sbtn;
 			when "0011" => cpu_in.rddata(7 downto 0) <= uart_data_in;
 			when "0100" => uart_rd <= '1'; cpu_in.rddata(7 downto 0) <= uart_data_in;
+			when "0101" => cpu_in.rddata(7 downto 0) <= rotary_position;
 			when others => null;
 		end case;
 	end if;
