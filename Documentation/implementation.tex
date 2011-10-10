@@ -1,4 +1,54 @@
 \section{Design \& Implementation}
 \subsection{Instruction Set Extension}
+The Leros microcontroller has a restricted instruction set, lacking multiply
+or divide instructions. A multiplication instruction was required for the
+project's selected application (TODO: was it??), therefore the Leros code
+had to
+be changed. This was complicated by the structure of Leros' instruction
+register, which did not have room for the additional logic to accommodate
+new
+operations. Since the Leros code supports only two arithmetic instructions,
+a single bit in the opcode was used to determine whether the instruction
+was an ADD or a SUB instruction.
+
+The first 5 bits of the instruction in the Leros CPU
+corresponded to that shown
+in Table \ref{tab:original-instruction}.
+\begin{table}
+\begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|}
+\hline
+\textbf{Bits} & Meaning \\
+00000 & nop \\
+00001 & arithmetic operation (add/sub) \\
+00010 & right shift \\
+00011 & reserved \\
+00100 & alu / logic ops \\
+00101 & load \\
+00110 & store \\
+00111 & IO \\
+\end{tabular}
+\end{table}
+
+Whether the arithmetic instruction was an ADD or SUB was further determined by
+the second bit of the instruction. It was decided that this was inefficient and
+limiting. The instruction format was changed such that the first 5 bits of the
+instruction simply set a flag, and the actual operation was encoded in bits 1
+and 2 of the instruction. The flag was defined as a new type and takes one of
+three values: \texttt{arith\_flag} for arithmetic operations,
+\texttt{logic\_flag} for logic operations, and  
+\texttt{io\_flag} for IO. This also left space for an additional four
+operations should they ever be required.
+
+Arranging things thus allowed many more instructions to be included. For each
+class of instruction, four operations were possible, giving a total of
+$4 \times 4 = 16$ operations. This also left space for an additional four
+operations should they ever be required. Additionally, it  had the added
+benefit of allowing left and
+right shift and rotate instructions to be added. The Leros design only supports
+right-shift; the reason for the omissions of the other operations is unknown.
+
+A major structural change was made in order to accommodate the additional
+instructions. 
+
 \subsection{Vector ALU}
 \subsection{Assembler for VHDL}

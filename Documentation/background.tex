@@ -1,3 +1,16 @@
 \section{Background}
 \subsection{SIMD}
 \subsection{Leros}
+In order to avoid carrying out redundant work, the decision was made to utilise
+an existing solution. The advantages were twofold; it allowed for much faster
+development and had already been tested by many people. Opencores \footnote{
+http://www.opencores.com } is a well-known collection of hardware solutions for
+FPGAs and ASICs, in both VHDL and Verilog. Our requirements called for a VHDL
+microcontroller, which there were many to choose from. Other critera were
+simplicity, small code size, and a RISC architecture. One project stood out
+after applying these critera - the Leros microcontroller.  Leros is a 16-bit
+processor optimized for FPGAs \cite{cite:TODO}, and was selected for use in this
+project.
+ 
+TODO: describe Leros, accumulator
+
