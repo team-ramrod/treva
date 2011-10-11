@@ -1,10 +1,11 @@
 \section{Design \& Implementation}
 \subsection{Instruction Set Extension}
 The Leros microcontroller has a restricted instruction set, lacking multiply
-or divide instructions. A multiplication instruction was required for the
-project's selected application (TODO: was it??), therefore the Leros code
-had to
-be changed. This was complicated by the structure of Leros' instruction
+or divide instructions, and shift and rotate operations. A multiplication
+instruction was originally required for the
+project's selected application (TODO: was it??), and thereforerequired a
+change to Leros' code. Such a change was complicated by the structure of
+Leros' instruction
 register, which did not have room for the additional logic to accommodate
 new
 operations. Since the Leros code supports only two arithmetic instructions,
@@ -18,6 +19,7 @@ in Table \ref{tab:original-instruction}.
 \begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|}
 \hline
 \textbf{Bits} & Meaning \\
+\hline
 00000 & nop \\
 00001 & arithmetic operation (add/sub) \\
 00010 & right shift \\
@@ -26,29 +28,34 @@ in Table \ref{tab:original-instruction}.
 00101 & load \\
 00110 & store \\
 00111 & IO \\
+\hline
 \end{tabular}
 \end{table}
 
 Whether the arithmetic instruction was an ADD or SUB was further determined by
 the second bit of the instruction. It was decided that this was inefficient and
-limiting. The instruction format was changed such that the first 5 bits of the
-instruction simply set a flag, and the actual operation was encoded in bits 1
-and 2 of the instruction. The flag was defined as a new type and takes one of
-three values: \texttt{arith\_flag} for arithmetic operations,
-\texttt{logic\_flag} for logic operations, and  
-\texttt{io\_flag} for IO. This also left space for an additional four
-operations should they ever be required.
+limiting. However, it was desirable than any changes to the opcode preserved the
+majority of the existing form. The instruction format was changed such that the
+first 5 bits of the instruction simply set a flag, and the actual operation was
+encoded in bits 1 and 2 of the instruction. This is in contrast to the original
+Leros code which encodes the arithmetic instruction in one bit, but was limited
+to two such instructions. The flag set was defined as a new type and takes one
+of three values: \texttt{arith\_flag} for arithmetic operations,
+\texttt{logic\_flag} for logic operations, and  \texttt{io\_flag} for IO. This
+also left space for an additional four operations should they ever be required.
+The additional bit needed to represent the new instructions was obtained by using
+one of the bits previously used to represent a logic opeartion, which themselves
+were now represented using the flags mentioned abouve.
 
 Arranging things thus allowed many more instructions to be included. For each
-class of instruction, four operations were possible, giving a total of
-$4 \times 4 = 16$ operations. This also left space for an additional four
-operations should they ever be required. Additionally, it  had the added
-benefit of allowing left and
-right shift and rotate instructions to be added. The Leros design only supports
-right-shift; the reason for the omissions of the other operations is unknown.
+class of instruction, four operations were possible, giving a total of $4 \times
+4 = 16$ operations. This also left space for an additional four operations
+should they ever be required. Additionally, it  had the added benefit of
+allowing left and right shift and rotate instructions to be added. The Leros
+design only supports right-shift; the reason for the original omissions of the other
+operations is unknown.
 
-A major structural change was made in order to accommodate the additional
-instructions. 
+
 
 \subsection{Vector ALU}
 \subsection{Assembler for VHDL}
