@@ -1,0 +1,29 @@
+\section{Testing}
+
+To be able to test and compare the SIMD processor to the normal SISD a program
+needed to be written. This program needed to be able to be run with little or no
+difference using both either instruction sets.
+
+Two algorithms were thought of that could make use of the SIMD architecture.
+The first one is ghosting two images together, the other is to run a fast
+Fourier transform. Because the ghosting was very simple to implement and had a
+visual output, it was chosen to be implemented first.
+
+\subsection{Ghosting}
+  Ghosting two images is where the value of each pixel location of each image is
+  added with a 50\% opacity each. To keep the process simple the images to be
+  used for testing are single channel eight bit grey scale images. These images
+  are first loaded into memory via a Universal asynchronous receiver/transmitter
+  (UART) then processed by the CPU, then once processed they are sent back to a
+  computer to be viewed via the UART.
+  
+  % TODO: INsert a bunch of ghosting images..
+
+  The ghosting algorithm process involves two ALU operations, the first one is
+  to add the two pixel values, which means they are converted into a 9 bit
+  number from the carry. This works fine as the 16bit architecture of Leros can
+  store the 9 bit number is a 16 bit register. Then once the pixels have been
+  added, the pixel value is divided by two. This has the same effect of giving
+  both the images 50\% opacity. To do this divide, a simple right shift is
+  applied to the pixel ignoring the least significant bit.
+
