@@ -15,19 +15,23 @@ was an ADD or a SUB instruction.
 The first 5 bits of the instruction in the Leros CPU
 corresponded to that shown
 in Table \ref{tab:original-instruction}.
+
 \begin{table}
-\begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.2\textwidth}|}
+\centering
+\caption{The original Leros instruction categories}
+\label{tab:original-instruction}
+\begin{tabular}{|l|l|}
 \hline
 \textbf{Bits} & Meaning \\
 \hline
-00000 & nop \\
-00001 & arithmetic operation (add/sub) \\
-00010 & right shift \\
-00011 & reserved \\
-00100 & alu / logic ops \\
-00101 & load \\
-00110 & store \\
-00111 & IO \\
+\texttt{00000} & NOP \\
+\texttt{00001} & Arithmetic Operation (ADD/SUB) \\
+\texttt{00010} & Right Shift \\
+\texttt{00011} & reserved \\
+\texttt{00100} & ALU / Logic Operation \\
+\texttt{00101} & Load \\
+\texttt{00110} & Store \\
+\texttt{00111} & IO \\
 \hline
 \end{tabular}
 \end{table}
