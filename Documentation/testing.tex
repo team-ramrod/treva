@@ -11,13 +11,18 @@ visual output, it was chosen to be implemented first.
 
 \subsection{Ghosting}
   Ghosting two images is where the value of each pixel location of each image is
-  added with a 50\% opacity each. To keep the process simple the images to be
-  used for testing are single channel eight bit grey scale images. These images
-  are first loaded into memory via a Universal asynchronous receiver/transmitter
-  (UART) then processed by the CPU, then once processed they are sent back to a
-  computer to be viewed via the UART.
+  added with a 50\% opacity each as shown in figure \ref{ghosting}. To keep the
+  process simple the images to be used for testing are single channel eight bit
+  grey scale images. These images are first loaded into memory via a Universal
+  asynchronous receiver/transmitter (UART) then processed by the CPU,
+  then once processed they are sent back to a computer to be viewed via the UART.
 
-  % TODO: INsert a bunch of ghosting images..
+  \begin{figure}[h!]
+  \caption{An example of a ghosted image}
+  \centering
+  \includegraphics[width=0.3\textwidth]{images/ghosted}
+  \label{ghosting}
+  \end{figure}
 
   The ghosting algorithm process involves two ALU operations, the first one is
   to add the two pixel values, which means they are converted into a 9 bit

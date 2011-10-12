@@ -1,5 +1,5 @@
 all:
-	latexmake report
+	latexmk report
 
 clean:
 	latexmk -pdf -C report
