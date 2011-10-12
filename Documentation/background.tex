@@ -1,5 +1,17 @@
 \section{Background}
 \subsection{SIMD}
+
+SIMD stands for Single Instruction Multiple Data.  This is a parallelisation
+technique where the program issues a single instruction such as an ADD to the
+CPU core which is then applied to multiple pieces of data at once.  By doing
+this any workflow that can be re-written to use the same series of instructions
+on a set of data can be sped up a lot.  The most common example of this type of
+parallelism is in Graphics Processing Units (GPUs)
+\cite{Fatahalian:2008:CLG:1400181.1400197}, these are required to perform the
+same transformation to millions of polygons simultaneously and so by utilising
+an SIMD architecture consisting of literally hundreds of parallel units they
+obtain massive speed ups.
+
 \subsection{Leros}
 In order to avoid carrying out redundant work, a decision was made to utilise an
 existing solution as a base development. The advantages were twofold; not only
