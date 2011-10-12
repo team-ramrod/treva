@@ -60,4 +60,14 @@ operations is unknown.
 \subsection{Vector ALU}
 \subsection{Assembler for VHDL}
 
-  Leros provided us with an assembler, but it was shit.
+  Leros provided us with an assembler, this was based on an ANother Tool for
+  Language Recognition (ANTLR) generated Java parser and lexer.  Because of the
+  quite major changes that would be required to add in support for vector
+  operations, along with no one in the group having experience with ANTLR, it
+  was decided that re-writing an assembler in a known language would be useful.
+
+  The re-write was performed using Ruby, a two-pass assembler was created that
+  matched the output of the Leros assembler, with one slight difference.  The
+  Leros assembler output a VHDL file to synthesis as a ROM, the new assembler
+  output a binary file.  To keep the integrated ROM a VHDLiser was also written
+  that input the binary and output a VHDL ROM.
