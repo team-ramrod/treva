@@ -16,7 +16,7 @@ visual output, it was chosen to be implemented first.
   are first loaded into memory via a Universal asynchronous receiver/transmitter
   (UART) then processed by the CPU, then once processed they are sent back to a
   computer to be viewed via the UART.
-  
+
   % TODO: INsert a bunch of ghosting images..
 
   The ghosting algorithm process involves two ALU operations, the first one is
@@ -27,3 +27,19 @@ visual output, it was chosen to be implemented first.
   both the images 50\% opacity. To do this divide, a simple right shift is
   applied to the pixel ignoring the least significant bit.
 
+\subsection{Simulation}
+ Without the on chip debugging provided by commercial microcontrollers it was
+ useful to implement a simulator to test the software that was written to test
+ the hardware. With the software correctly passing unit tests in a managed
+ environment, the hardware testing and debugging could be done under the
+ assumption that the software was correct. This has the potential to saving a lot
+ of complication and effort, especially for more involved applications such as
+ fourier transforms.
+
+ A simulator was implemented capable of interpreting assembly language,
+ simulating the ALU(s) and registers and single stepping through code in a
+ manner similar to the gdb debugger.
+
+ Only the external behaviour was mocked, the hardware itself was not due to the
+ cost and minimal gains of implementing this. IO was simulated by a queue of
+ user specified data elements.
