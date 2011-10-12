@@ -12,7 +12,13 @@
 \usepackage{caption}
 \captionsetup{margin=30pt,font=small,labelfont=bf}
 
-  \input{frontmatter}
+\input{frontmatter}
+
+\begin{document}
+
+  \maketitle
+
+  \input{abstract}
   \input{introduction}
   \input{background}
   \input{implementation}
@@ -26,7 +32,7 @@
  % \IEEEtriggeratref{2}
   \bibliographystyle{IEEEtran}
   \bibliography{IEEEabrv,report}
-  \input{appendices}
+
 \end{document}
 
 
