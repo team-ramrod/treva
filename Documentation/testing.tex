@@ -39,31 +39,36 @@ visual output, it was chosen to be implemented first.
  environment, the hardware testing and debugging could be done under the
  assumption that the software was correct. This has the potential to saving a lot
  of complication and effort, especially for more involved applications such as
- fourier transforms.
+ Fourier transforms.
 
  A simulator was implemented capable of interpreting assembly language,
  simulating the ALU(s) and registers and single stepping through code in a
- manner similar to the gdb debugger.
+ manner similar to the GNU debugger.
 
  Only the external behaviour was mocked, the hardware itself was not due to the
  cost and minimal gains of implementing this. IO was simulated by a queue of
- user specified data elements ready to be fed in each time the 'IN' instruction
- executed. Output from the UART (ie the results of the software) were printed to
+ user specified data elements ready to be fed in each time the `IN' instruction
+ executed. Output from the UART (i.e. the results of the software) were printed to
  screen and could be checked against a set of expected values for regression
  testing.
 
  Upon starting the debugger, the user is presented with a prompt at which they
- may run any of the following commands.
- \begin{itemize}
-    \item \emph{accumulator} Inspect the value stored in the accumulator register.
-    \item \emph{step} Execute the current line and pause execution.
-    \item \emph{help} Show this command list.
-    \item \emph{breakpoint} Toggle a breakpoint at a specified line.
-    \item \emph{continue} Resume execution.
-    \item \emph{inspect} Print the value of a specified register.
-    \item \emph{dump} Print the accumulator and a specified range of registers.
-    \item \emph{print} Print the line-numbered source code.
- \end{itemize}
+ may run any of the following commands:
+
+ \vspace{5pt}
+ \begin{tabularx}{\linewidth}{lX}
+    \hline
+    \emph{accumulator} & Inspect the value stored in the accumulator register.  \\
+    \emph{step} & Execute the current line and pause execution. \\
+    \emph{help} & Show this command list. \\
+    \emph{breakpoint} & Toggle a breakpoint at a specified line. \\
+    \emph{continue} & Resume execution. \\
+    \emph{inspect} & Print the value of a specified register. \\
+    \emph{dump} & Print the accumulator and a specified range of registers. \\
+    \emph{print} & Print the line-numbered source code. \\
+    \hline
+ \end{tabularx}
+ \vspace{5pt}
 
  The simulator was used to test the ghosting algorithm and quickly diagnosed a
  mistake in the source code.
