@@ -1,5 +1,10 @@
 all:
 	latexmake report
+sall:
+	pdflatex report.tex
+	bibtex report
+	pdflatex report.tex
+	pdflatex report.tex
 
 clean:
 	latexmk -pdf -C report
