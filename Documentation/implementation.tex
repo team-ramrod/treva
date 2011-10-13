@@ -1,19 +1,17 @@
 \section{Design \& Implementation}
 \subsection{Instruction Set Extension}
-The Leros microcontroller has a restricted instruction set, lacking multiply
-or divide instructions, and shift and rotate operations. A multiplication
-instruction was originally required for the
-project's selected application (a fast fourier transform), and thereforerequired a
-change to Leros' code. Such a change was complicated by the structure of
-Leros' instruction
-register, which did not have room for the additional logic to accommodate
-new
-operations. Since the Leros code supports only two arithmetic instructions,
-a single bit in the opcode was used to determine whether the instruction
-was an ADD or a SUB instruction.
 
-The first 5 bits of the instruction in the Leros CPU
-corresponded to that shown
+The Leros microcontroller has a restricted instruction set, lacking multiply or
+divide instructions, and shift and rotate operations. A multiplication
+instruction was originally required for the project's selected application (a
+fast Fourier transform), and therefore required a change to Leros' code. Such a
+change was complicated by the structure of Leros' instruction register, which
+did not have room for the additional logic to accommodate new operations. Since
+the Leros code supports only two arithmetic instructions, a single bit in the
+opcode was used to determine whether the instruction was an ADD or a SUB
+instruction.
+
+The first 5 bits of the instruction in the Leros CPU corresponded to that shown
 in Table \ref{tab:original-instruction}.
 
 \begin{table}
@@ -47,9 +45,9 @@ to two such instructions. The flag set was defined as a new type and takes one
 of three values: \texttt{arith\_flag} for arithmetic operations,
 \texttt{logic\_flag} for logic operations, and  \texttt{io\_flag} for IO. This
 also left space for an additional four operations should they ever be required.
-The additional bit needed to represent the new instructions was obtained by using
-one of the bits previously used to represent a logic opeartion, which themselves
-were now represented using the flags mentioned abouve.
+The additional bit needed to represent the new instructions was obtained by
+using one of the bits previously used to represent a logic operation, which
+themselves were now represented using the flags mentioned above.
 
 Arranging things thus allowed many more instructions to be included. For each
 class of instruction, four operations were possible, giving a total of $4 \times
