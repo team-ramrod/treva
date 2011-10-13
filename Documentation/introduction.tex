@@ -6,11 +6,24 @@ new CPU cores.  This will be done in the context of the
 TREVA\footnote{\url{https://github.com/team-ramrod/treva}} project --
 \emph{Team-Ramrod's ENEL429 VHDL Assignment}.
 
-One of the possible applications that was being explored was the implementation
-of a Fast Fourier Transform \cite{Jamieson198648}.
-
 %TODO: Introduce what's new in SIMD then what's in our report
+
+To test the SIMD core  and compare it to a SISD core, test applications are
+needed. One of the possible applications that was being explored was the
+implementation of a Fast Fourier Transform \cite{Jamieson198648}. The other
+application, which is not as useful for real applications, but still would
+produce valuable metrics is ghosting two images. This provides one image
+overlaid on top of another with 50\% opacity. This also produces a visual output
+that can be inspected for errors.
+
 
 \subsection{Spartan 3E-1600E}
 % Talk about the board/FPGA we used
+To run the VHDL code and provide results, a Spartan 3E-1600 Development Board
+was provided. This development board hosts a Xilinx XC3S1600E FPGA with 1600K
+logic gates. The board also holds a array of various external peripherals,
+including UART, 10-100 Ethernet, Flash memory, DDR memory, LCD display, PS/2
+mouse or keyboard port, buttons, LEDs and switches.
+
+
 
