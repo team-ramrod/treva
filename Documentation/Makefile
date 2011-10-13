@@ -1,10 +1,18 @@
 all:
-	latexmake report
-sall:
-	pdflatex report.tex
-	bibtex report
-	pdflatex report.tex
-	pdflatex report.tex
+	case $$USER in \
+	nemo157) \
+		latexmake report \
+	;; \
+	simon) \
+		latexmk -pdf report; \
+	;; \
+	*) \
+		pdflatex report.tex; \
+		bibtex report; \
+		pdflatex report.tex; \
+		pdflatex report.tex; \
+	;; \
+esac
 
 clean:
 	latexmk -pdf -C report
