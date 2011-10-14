@@ -1,6 +1,12 @@
 \begin{abstract}
 This report explores the implementation and testing of a Single Instruction
 Multiple Data (SIMD) Accumulator based CPU on a Xilinx FPGA development board.
-An open source VHDL CPU was modified to allow SIMD instructions to be processed.
-Example applications in basic image processing were planned, but not fully implemented. 
+An existing microcontroller project \emph{Leros} is used as a base for development,
+and is extended to include new instructions and multiple accumulators. A complete
+redesign of the ALU is carried out to accommodate the needs of the project. The design
+is synthesised and implemented on the Xilinx board and tested with programs written 
+and assembled with a custom assembler written specifically for the project. A simulator is
+also written to test the design. The expected results were not observed due to an
+unresolved issue with the IO inside the FPGA, however it is expected that this would
+be resolved given more time.
 \end{abstract}
