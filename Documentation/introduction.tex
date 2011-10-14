@@ -1,10 +1,16 @@
 \section{Introduction}
 
-\IEEEPARstart{W}{hat} is SIMD would probably be a better place to start.  This
-report will detail exactly what SIMD is and why it is still useful in designing
-new CPU cores.  This will be done in the context of the
+\IEEEPARstart{T}{he} Single Instruction, Multiple Data architecture has been in 
+existence since the 1970s with implementations in the supercomputers of Cray 
+and its contemporaries. Modern versions play a crucial role in the 
+desktop computer market, where the power SIMD brings to signal
+processing affords users speedy multimedia decoding\cite{bonnot2008definition}. This
+report will detail exactly how SIMD is implemented and demonstrate its usefulness
+in new CPU cores.  This will be done in the context of the
 TREVA\footnote{\url{https://github.com/team-ramrod/treva}} project --
 \emph{Team-Ramrod's ENEL429 VHDL Assignment}.
+
+
 
 %TODO: Introduce what's new in SIMD then what's in our report
 
@@ -19,11 +25,13 @@ that can be inspected for errors.
 
 \subsection{Spartan 3E-1600E}
 % Talk about the board/FPGA we used
-To run the VHDL code and provide results, a Spartan 3E-1600 Development Board
-was provided. This development board hosts a Xilinx XC3S1600E FPGA with 1600K
+The VHDL code was synthesized on the Spartan 3E-1600 Development Board
+provided. This development board hosts a Xilinx XC3S1600E FPGA with 1600K
 logic gates. The board also holds a array of various external peripherals,
 including UART, 10-100 Ethernet, Flash memory, DDR memory, LCD display, PS/2
-mouse or keyboard port, buttons, LEDs and switches.
+mouse or keyboard port, buttons, LEDs and switches. The Spartan family is targeted
+at low cost, high volume applications and as such Xilinx has several hundred million
+of the devices\cite{xilinxpress} since their launch in 1998.
 
 
 
