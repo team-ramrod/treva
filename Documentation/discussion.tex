@@ -1,2 +1,22 @@
 \section{Discussion}
 %TODO: everything
+\subsection{Effects of Single-Cycle Instructions}
+The Leros code base was designed for single clock cycle instructions. Such a
+restriction poses few problems for addition and subtraction instructions, but
+there was the possibility that any further added operations may not be able to be
+completed in a single cycle. This presents a problem because Leros' pipelined
+design relies on these single cycle instructions.
+
+It was originally thought that the goals of the project would benefit from
+multiply and divide instructions. There was no way to control whether these
+would be implemented as single-cycle, as this would be decided during the
+synthesis stage by the Xilinx compiler. Fortunately, after implementation of the
+multiplication operation, inspection of the RTL schematic showed that this
+instruction had indeed been implemented single-cycle.
+
+Division was not expected to be implemented as a single-cycle instruction by
+Xilinx, and this suspicion was confirmed on inspection of the RTL schematic
+after a division instruction was added. For this reason, no division instruction
+was included in the final design, in order to ensure that the pipeline
+architecture was not compromised. The lack of a division instruction did not
+hinder the project, however it is worth noting this deficiency.
