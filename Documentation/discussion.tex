@@ -14,7 +14,7 @@ Leros architecture that the processor was designed on. While when the processor
 was first chosen it appeared to have a solid implementation the more the
 architecture was examined the more questionable design decisions were
 encountered. The reason for these problems has most likely stemmed from the
-large push on the CPU to minimize its size at all costs. This coupled with the
+large push on the CPU to minimise its size at all costs. This coupled with the
 design and all the code being written by a single person meant issues were
 encountered when an attempt to understand and modify it was made. The two
 largest issues encounter were that the UART code that came with the CPU was not
@@ -46,3 +46,14 @@ after a division instruction was added. For this reason, no division instruction
 was included in the final design, in order to ensure that the pipeline
 architecture was not compromised. The lack of a division instruction did not
 hinder the project, however it is worth noting this deficiency.
+
+\subsection{IO Issues}
+A hitherto unresolved issue lies with the input to the CPU. When using real input,
+it was never able to enter the ALU, it was traced through to this point but
+could not be fixed. It is assumed there is perhaps an erroneous flag that is causing
+this issue and highlights the difficulties with working with a code base that is 
+unfamiliar when time constraints exist. It is assumed that given more time, this 
+issue would be resolved. It is worth noting the frustration caused by this small
+issue, as it stopped any real results from being obtained. Test programs using input
+from memory however, were unaffected and executed as expected. This success is the 
+reason for the confidence that it is only a small issue.
