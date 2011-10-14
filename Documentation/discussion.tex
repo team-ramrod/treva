@@ -1,30 +1,32 @@
 \section{Discussion}
 %TODO: everything
 In its current state the designed SIMD processor has several drawbacks that mean
-it does not perform at the level that was strived for. The limit of 32 ALU's
+it does not perform at the level that was strived for. The limit of 32 ALUs
 imposed by memory issues and the additional memory operations required due to
-the ALU's not sharing memory has caused these serious performance constraints.
-While the SIMD processor would still easily out perform a SISD implementation
-based on the same design it did not achieve the high levels of throughput that
-would justify the use of the FPGA implementation of the processor for use in
+the ALUs not sharing memory has caused these serious performance constraints.
+While the SIMD processor would still easily out perform an SISD implementation
+based on the same design, it did not achieve the high levels of throughput that
+would justify the use of the FPGA implementation for use in
 image processing and potentially FFT applications.  
 
-The source of many of the issues that were encountered steamed from the original
+The source of many of the issues that were encountered stemmed from the original
 Leros architecture that the processor was designed on. While when the processor
-was first chosen it appeared to have a solid implementation the more the
+was first chosen it appeared to have a solid implementation, the more the
 architecture was examined the more questionable design decisions were
-encountered. The reason for these problems has most likely stemmed from the
-large push on the CPU to minimize its size at all costs. This coupled with the
-design and all the code being written by a single person meant issues were
-encountered when an attempt to understand and modify it was made. The two
-largest issues encounter were that the UART code that came with the CPU was not
-already implemented in the CPU and when added in did not appear to function
-correctly. The second issue was that while the bock diagram of the system showed
+encountered. The reason for these problems most likely stems from the
+large push on the CPU to minimize its size at all costs. This, coupled with the
+design and all the code being written by a single person, meant issues were
+encountered when an attempt to understand and modify it was made.
+
+The two
+largest issues were that the UART code that came with the CPU was not
+already implemented in the CPU, and when added in did not appear to function
+correctly. The second issue was that while the block diagram of the system showed
 a large number of small components each linked to the others in a logical
-arrangement large amounts of the of the units are implemented inside single
+arrangement, large amounts of the units are implemented inside single
 processes in the code. An example of this is in the code the ALU, input
 multiplexer, memory and accumulator are all defined at once in the same process
-with a large amount of coupling through shared signals.  
+with a large amount of coupling through shared signals.
 
 \subsection{Effects of Single-Cycle Instructions}
 The Leros code base was designed for single clock cycle instructions. Such a
@@ -38,7 +40,7 @@ multiply and divide instructions. There was no way to control whether these
 would be implemented as single-cycle, as this would be decided during the
 synthesis stage by the Xilinx compiler. Fortunately, after implementation of the
 multiplication operation, inspection of the RTL schematic showed that this
-instruction had indeed been implemented single-cycle.
+instruction had indeed been implemented as single-cycle.
 
 Division was not expected to be implemented as a single-cycle instruction by
 Xilinx, and this suspicion was confirmed on inspection of the RTL schematic
