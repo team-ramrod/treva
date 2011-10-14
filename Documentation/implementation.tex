@@ -36,12 +36,12 @@ in Table \ref{tab:original-instruction}.
 
 Whether the arithmetic instruction was an ADD or SUB was further determined by
 the second bit of the instruction. It was decided that this was inefficient and
-limiting. However, it was desirable than any changes to the opcode preserved the
+limiting. However, it was desirable that any changes to the opcode preserved the
 majority of the existing form. The instruction format was changed such that the
 first 5 bits of the instruction simply set a flag, and the actual operation was
 encoded in bits 1 and 2 of the instruction. This is in contrast to the original
-Leros code which encodes the arithmetic instruction in one bit, but was limited
-to two such instructions. The flag set was defined as a new type and takes one
+Leros code which encodes the arithmetic instruction in one bit, which limited it
+to two instructions. The flag set was defined as a new type and takes one
 of three values: \texttt{arith\_flag} for arithmetic operations,
 \texttt{logic\_flag} for logic operations, and  \texttt{io\_flag} for IO. This
 also left space for an additional four operations should they ever be required.
@@ -64,14 +64,14 @@ operations is unknown.
 
 \subsection{Assembler for VHDL}
 
-  Leros provided us with an assembler, this was based on an ANother Tool for
-  Language Recognition (ANTLR) generated Java parser and lexer.  Because of the
-  quite major changes that would be required to add in support for vector
+  Leros provided us with an assembler, based on an ANTLR (ANother Tool for
+  Language Recognition) generated Java parser and lexer.  Because of the
+  significant changes that would be required to add in support for vector
   operations, along with no one in the group having experience with ANTLR, it
   was decided that re-writing an assembler in a known language would be useful.
 
-  The re-write was performed using Ruby, a two-pass assembler was created that
-  matched the output of the Leros assembler, with one slight difference.  The
-  Leros assembler output a VHDL file to synthesis as a ROM, the new assembler
+  The re-write was performed using Ruby; a two-pass assembler was created that
+  matched the output of the Leros assembler, with one difference.  The
+  Leros assembler output a VHDL file to be synthesised as a ROM, whereas the new assembler
   output a binary file.  To keep the integrated ROM a VHDLiser was also written
-  that input the binary and output a VHDL ROM.
+  that took the binary as input and output a VHDL ROM.
